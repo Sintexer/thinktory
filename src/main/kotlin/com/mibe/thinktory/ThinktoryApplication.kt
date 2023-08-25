@@ -1,11 +1,11 @@
-package com.mibe.tips
+package com.mibe.thinktory
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class TipsApplication
+class ThinktoryApplication
 
 fun main(args: Array<String>) {
-	runApplication<TipsApplication>(*args)
+	runApplication<ThinktoryApplication>(*args)
 }

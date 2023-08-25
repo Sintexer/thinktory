@@ -1,1 +1,1 @@
-rootProject.name = "tips"
+rootProject.name = "thinktory"
