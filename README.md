@@ -62,7 +62,41 @@
 
 ## 4. *API Endpoints*
 
-*TBD*
+*DRAFT*
+
+- GET /concepts: Fetch all concepts for the authenticated user
+
+- POST /concepts: Create a new concept for the authenticated user (theory or standalone question)
+
+- GET /concepts/{conceptId}: Retrieve specific concept details by ID for the authenticated user
+
+- PUT /concepts/{conceptId}: Update specific concept details by ID for the authenticated user
+
+- DELETE /concepts/{conceptId}: Delete specific concept by ID for the authenticated user
+
+- GET /topics: Fetch all topics for the authenticated user
+
+- POST /topics: Create a new topic (and optional parent topic) for the authenticated user
+
+- GET /topics/{topicId}: Retrieve specific topic details by ID for the authenticated user
+
+- PUT /topics/{topicId}: Update specific topic details by ID for the authenticated user
+
+- DELETE /topics/{topicId}: Delete specific topic by ID for the authenticated user
+
+- GET /concepts/labels: Fetch unique labels in concepts for the authenticated user
+
+- GET /concepts/filter: Filter concepts by topic, subtopic, or label for the authenticated user
+
+- GET /search: Search for concepts by text query in title, description, or content (search both theories and questions)
+
+- GET /suggestions: Get study suggestions based on categories, labels, or recent updates
+
+- POST /upload: Upload content (e.g., git repository) to update the user's knowledge base
+
+- POST /export: Export the user's knowledge base in various formats (e.g., Markdown, PDF)
+
+- GET /stats: Retrieve knowledge base statistics, such as the number of theories, questions, and topic distributions
 
 ## 5. *Use Cases*
 
