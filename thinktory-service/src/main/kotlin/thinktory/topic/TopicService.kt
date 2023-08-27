@@ -1,4 +1,4 @@
-package com.mibe.thinktory.topic
+package thinktory.topic
 
 interface TopicService {
     fun getAllTopics(userId: String): List<Topic>

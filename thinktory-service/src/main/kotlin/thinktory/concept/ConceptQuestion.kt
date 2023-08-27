@@ -1,6 +1,6 @@
-package com.mibe.thinktory.question
+package thinktory.concept
 
-class Question (
+data class ConceptQuestion (
         val title: String,
         val description: String?,
         val answer: String?,

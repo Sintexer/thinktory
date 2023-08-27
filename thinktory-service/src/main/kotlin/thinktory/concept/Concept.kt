@@ -1,8 +1,8 @@
-package com.mibe.thinktory.concept
+package thinktory.concept
 
-import com.mibe.thinktory.question.Question
-import com.mibe.thinktory.topic.Topic
-import com.mibe.thinktory.user.User
+import thinktory.question.Question
+import thinktory.topic.Topic
+import thinktory.user.User
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.mapping.DBRef
 import org.springframework.data.mongodb.core.mapping.Document
