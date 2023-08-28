@@ -1,4 +1,4 @@
-package thinktory.topic
+package com.mibe.thinktory.service.topic
 
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.mapping.DBRef

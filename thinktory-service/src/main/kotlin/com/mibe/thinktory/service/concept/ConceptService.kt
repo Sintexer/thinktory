@@ -1,4 +1,4 @@
-package thinktory.concept
+package com.mibe.thinktory.service.concept
 
 interface ConceptService {
     fun getAllConcepts(userId: String): List<Concept>

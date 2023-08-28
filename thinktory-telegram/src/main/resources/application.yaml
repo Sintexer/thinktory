@@ -1,0 +1,3 @@
+thinktory:
+  telegram:
+    botToken: ${BOT_TOKEN}

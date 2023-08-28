@@ -1,4 +1,4 @@
-package thinktory
+package com.mibe.thinktory.service
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

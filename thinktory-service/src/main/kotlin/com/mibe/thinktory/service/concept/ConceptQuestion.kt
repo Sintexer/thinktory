@@ -1,4 +1,4 @@
-package thinktory.concept
+package com.mibe.thinktory.service.concept
 
 data class ConceptQuestion (
         val title: String,

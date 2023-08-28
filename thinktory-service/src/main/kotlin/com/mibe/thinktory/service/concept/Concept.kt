@@ -1,15 +1,16 @@
-package thinktory.concept
+package com.mibe.thinktory.service.concept
 
-import thinktory.question.Question
-import thinktory.topic.Topic
-import thinktory.user.User
+import com.mibe.thinktory.service.question.Question
+import com.mibe.thinktory.service.topic.Topic
+import com.mibe.thinktory.service.user.User
 import org.bson.types.ObjectId
+import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.DBRef
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document(collection="concepts")
 data class Concept(
-        val id: ObjectId = ObjectId.get(),
+        @Id val id: ObjectId = ObjectId.get(),
         val title: String?,
         val description: String?,
         val content: String?,
