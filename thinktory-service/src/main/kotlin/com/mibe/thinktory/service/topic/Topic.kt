@@ -1,12 +1,14 @@
 package com.mibe.thinktory.service.topic
 
 import org.bson.types.ObjectId
+import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.DBRef
 import org.springframework.data.mongodb.core.mapping.Document
 
-@Document(collection="topics")
+@Document(collection = "topics")
 data class Topic(
-        val id: ObjectId = ObjectId.get(),
+        @Id val id: ObjectId = ObjectId.get(),
+        val bookId: ObjectId,
         val name: String,
         @DBRef val parent: Topic? = null
 )
