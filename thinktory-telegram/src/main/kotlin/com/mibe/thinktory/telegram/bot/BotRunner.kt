@@ -1,4 +1,4 @@
-package com.mibe.thinktory.telegram
+package com.mibe.thinktory.telegram.bot
 
 import eu.vendeli.tgbot.TelegramBot
 import kotlinx.coroutines.runBlocking
@@ -17,7 +17,6 @@ class BotRunner(
     @EventListener(ApplicationReadyEvent::class)
     fun startBot() {
         botExecutorService.submit{
-            println("Bot is ${bot}")
             runBlocking { bot.handleUpdates() }
         }
     }

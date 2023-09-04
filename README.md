@@ -1,11 +1,12 @@
 # *Thinktory Specification*
 
 **Table of Contents**
-1. [Introduction](#introduction)
-2. [Functional Requirements](#functional-requirements)
-3. [Non-Functional Requirements](#non-functional-requirements)
-4. [API Endpoints](#api-endpoints)
-5. [Use Cases](#use-cases)
+1. [Introduction](#1-introduction)
+2. [Functional Requirements](#2-functional-requirements)
+3. [Non-Functional Requirements](#3-non-functional-requirements)
+4. [API Endpoints](#4-api-endpoints)
+5. [Use Cases](#5-use-cases)
+6. [Running the application](#6-running-the-application)
 
 
 ## 1. *Introduction*
@@ -108,3 +109,70 @@
 
 ### 5.3 Sharing knowledge bases
 - Users can share their knowledge bases with others by exporting them to git repositories and hosting them on platforms like GitHub.
+
+## 6. *Running the application*
+
+### 6.1 Prerequisites
+
+You must have a MongoDB instance running with the necessary credentials and a Telegram bot created to obtain the bot 
+token as required.
+
+### 6.2 Environment Variables
+
+To configure the Thinktory application, you need to set the following environment variables:
+
+| Name             | Description                                     | Example Value       |
+|------------------|-------------------------------------------------|---------------------|
+| DB_ROOT_USERNAME | The MongoDB root username                       | rootusername        |
+| DB_ROOT_PASSWORD | The MongoDB root password                       | rootpassword        |
+| MONGODB_DATABASE | The MongoDB database name used for the project  | thinktory           |
+| MONGODB_USER     | The MongoDB username for the thinktory database | admin               |
+| MONGODB_PASSWORD | The MongoDB password for the thinktory database | admin               |
+| MONGODB_PORT     | The MongoDB port                                | 27017               |
+| MONGODB_HOST     | The MongoDB host                                | localhost           |
+| BOT_TOKEN        | The Telegram bot token                          | tgbottokenvaluehere |
+
+**Here's an example of how to set the environment variables in Linux or macOS:**
+
+```bash
+
+export DB_ROOT_USERNAME=rootusername
+export DB_ROOT_PASSWORD=rootpassword
+export MONGODB_DATABASE=thinktory
+export MONGODB_USER=admin
+export MONGODB_PASSWORD=admin
+export MONGODB_PORT=27017
+export MONGODB_HOST=localhost
+export BOT_TOKEN=tgbottokenvaluehere
+```
+
+For Windows, execute the following commands in the Command Prompt:
+
+```batch
+
+set DB_ROOT_USERNAME=rootusername
+set DB_ROOT_PASSWORD=rootpassword
+set MONGODB_DATABASE=thinktory
+set MONGODB_USER=admin
+set MONGODB_PASSWORD=admin
+set MONGODB_PORT=27017
+set MONGODB_HOST=localhost
+set BOT_TOKEN=tgbottokenvaluehere
+```
+
+Alternatively, you can use a .env file or set these environment variables directly in your IDE configuration, depending on your development environment and preferences.
+
+
+### 6.3 Run the Application
+
+After setting up the required environment variables, you can build and run the Thinktory application using your favorite Java build tools such as Maven or Gradle.
+
+For example:
+
+```bash
+
+gradle bootJar
+java -jar target/thinktory-0.0.1-SNAPSHOT.jar
+```
+
+This command will build the project and run the application using the provided environment variables. The application should be able to connect to your MongoDB instance and interact with your Telegram bot.

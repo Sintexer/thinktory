@@ -7,6 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document
 @Document(collection = "books")
 data class Book(
     @Id val id: ObjectId = ObjectId.get(),
-    val telegramId: String,
+    val telegramId: Long,
     val index: Map<ObjectId, List<ObjectId>>
 )

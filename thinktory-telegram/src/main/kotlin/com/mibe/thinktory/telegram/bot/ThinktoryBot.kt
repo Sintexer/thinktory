@@ -1,6 +1,5 @@
 package com.mibe.thinktory.telegram.bot
 
-import com.mibe.thinktory.telegram.SpringClassManager
 import eu.vendeli.tgbot.TelegramBot
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean

@@ -1,4 +1,4 @@
-package com.mibe.thinktory.telegram
+package com.mibe.thinktory.telegram.bot
 
 import eu.vendeli.tgbot.interfaces.ClassManager
 import org.springframework.context.ApplicationContext

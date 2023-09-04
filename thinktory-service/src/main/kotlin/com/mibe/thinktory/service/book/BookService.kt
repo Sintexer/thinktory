@@ -1,6 +1,8 @@
 package com.mibe.thinktory.service.book
 
 interface BookService {
-    fun createBook(userId: String): Book
-    fun getBook(userId: String): Book
+    fun createBook(telegramId: Long): Book
+    fun getBook(telegramId: Long): Book
+    fun getBookOrNull(telegramId: Long): Book?
+    fun getOrCreateBook(telegramId: Long): Book
 }
