@@ -1,9 +1,9 @@
 package com.mibe.thinktory.service.concept
 
+import org.bson.types.ObjectId
+
 interface ConceptService {
-    fun getAllConcepts(userId: String): List<Concept>
-    fun getConceptById(userId: String, conceptId: String): Concept
-    fun createConcept(userId: String, concept: Concept): Concept
-    fun updateConcept(userId: String, conceptId: String, updatedConcept: Concept): Concept
-    fun deleteConcept(userId: String, conceptId: String)
+    fun createConcept(bookId: ObjectId, concept: Concept): Concept
+    fun createConceptFromTheory(userId: Long, theory: String): Concept
+    fun getRecentUserConcept(userId: Long): Concept?
 }

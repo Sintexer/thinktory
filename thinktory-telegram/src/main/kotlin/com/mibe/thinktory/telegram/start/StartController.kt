@@ -1,6 +1,7 @@
 package com.mibe.thinktory.telegram.start
 
 import com.mibe.thinktory.service.book.BookService
+import com.mibe.thinktory.telegram.user.UserDataKeys
 import eu.vendeli.tgbot.TelegramBot
 import eu.vendeli.tgbot.annotations.CommandHandler
 import eu.vendeli.tgbot.api.message
@@ -13,7 +14,10 @@ class StartController(
 ) {
     @CommandHandler(["/start"])
     suspend fun start(user: User, bot: TelegramBot) {
-        val book = bookService.getOrCreateBook(user.id)
-        message { "Hello! Your book Id is ${book.id}" }.send(user, bot)
+        val telegramId = user.id
+        val book = bookService.getOrCreateBook(telegramId)
+        val bookId = book.id
+        bot.userData.set(telegramId, UserDataKeys.BOOK_ID, bookId)
+        message { "Hello! Your book Id is $bookId" }.send(user, bot)
     }
 }
