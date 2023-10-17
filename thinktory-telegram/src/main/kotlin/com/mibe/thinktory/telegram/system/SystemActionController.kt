@@ -15,9 +15,9 @@ class SystemActionController {
         bot.inputListener.set(user.id, "")
     }
 
-    @UnprocessedHandler
-    suspend fun unhandledUpdates(user: User, bot: TelegramBot) {
-        message { "The bot does not understand what you want him to do :(" }.send(user, bot)
-    }
+//    @UnprocessedHandler
+//    suspend fun unhandledUpdates(user: User, bot: TelegramBot) {
+//        message { "The bot does not understand what you want him to do :(" }.send(user, bot)
+//    }
 
 }

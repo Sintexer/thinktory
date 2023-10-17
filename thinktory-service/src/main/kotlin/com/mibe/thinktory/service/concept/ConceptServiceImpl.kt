@@ -20,4 +20,9 @@ class ConceptServiceImpl(
     override fun getRecentUserConcept(userId: Long): Concept? {
         return conceptRepository.findTopByUserIdOrderByLastUpdateDesc(userId)
     }
+
+    override fun updateTitle(conceptId: ObjectId, title: String): Concept {
+        val concept = conceptRepository.findById(conceptId).orElseThrow { ConceptNotFoundException(conceptId) }
+        return conceptRepository.save(concept.copy(title = title))
+    }
 }

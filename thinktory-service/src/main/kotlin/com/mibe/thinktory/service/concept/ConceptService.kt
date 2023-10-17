@@ -6,4 +6,5 @@ interface ConceptService {
     fun createConcept(bookId: ObjectId, concept: Concept): Concept
     fun createConceptFromTheory(userId: Long, theory: String): Concept
     fun getRecentUserConcept(userId: Long): Concept?
+    fun updateTitle(conceptId: ObjectId, title: String): Concept
 }

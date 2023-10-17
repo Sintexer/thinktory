@@ -14,10 +14,7 @@ class StartController(
 ) {
     @CommandHandler(["/start"])
     suspend fun start(user: User, bot: TelegramBot) {
-        val telegramId = user.id
-        val book = bookService.getOrCreateBook(telegramId)
-        val bookId = book.id
-        bot.userData.set(telegramId, UserDataKeys.BOOK_ID, bookId)
+        val bookId = "none"
         message { "Hello! Your book Id is $bookId" }.send(user, bot)
     }
 }
