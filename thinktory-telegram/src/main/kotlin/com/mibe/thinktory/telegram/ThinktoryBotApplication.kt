@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-@EnableTransactionManagement
 @EnableMongoRepositories(basePackageClasses = [ServicePackageScanMarker::class])
 @SpringBootApplication(scanBasePackageClasses = [ThinktoryBotApplication::class, ServicePackageScanMarker::class])
 class ThinktoryBotApplication {

@@ -39,13 +39,13 @@ class ConceptController (
         br()
         "Finish" callback "finishConcept"
     }
-//
-//    @CommandHandler(["addTitleToConcept"])
-//    suspend fun addTitleAndDescription(user: User, bot: TelegramBot) {
-//        message { "Send title you like" }.send(user, bot)
-//        bot.inputListener.set(user.id, "titleInput")
-//    }
-//
+
+    @CommandHandler(["addTitleToConcept"])
+    suspend fun addTitleAndDescription(user: User, bot: TelegramBot) {
+        message { "Send title you like" }.send(user, bot)
+        bot.inputListener.set(user.id, "titleInput")
+    }
+
     @InputHandler(["titleInput"])
     suspend fun titleInputCatch(update: ProcessedUpdate, user: User, bot: TelegramBot) {
         val conceptId = bot.userData.get<ObjectId>(user.id, UserDataKeys.ACTIVE_CONCEPT_ID)
@@ -55,7 +55,7 @@ class ConceptController (
         }
         conceptService.updateTitle(conceptId, update.text)
         message { "Title updated. What to do next?" }
-//            .inlineKeyboardMarkup (getNewConceptEditKeyboard())
+            .inlineKeyboardMarkup (newConceptKeyboard)
             .send(user, bot)
     }
 

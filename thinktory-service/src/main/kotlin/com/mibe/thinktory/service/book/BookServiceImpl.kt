@@ -23,7 +23,6 @@ class BookServiceImpl(
         return bookRepository.findByTelegramId(telegramId)
     }
 
-    @Transactional
     override fun getOrCreateBook(telegramId: Long) = getBookOrNull(telegramId) ?: createBook(telegramId)
 
     override fun linkConcept(unlabeledConcept: UnlabeledConcept) {
