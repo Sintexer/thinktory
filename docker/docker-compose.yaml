@@ -1,45 +1,21 @@
 version: '3.8'
 
 services:
-  mongodb-primary:
-    image: bitnami/mongodb:6.0
-    container_name: mongodb-primary
-    restart: always
+  mongodb:
+    image: mongo:latest
+    restart: unless-stopped
+    container_name: "mongodb"
     ports:
-      - ${MONGODB_PORT}:${MONGODB_PORT}
+      - ${MONGODB_PORT}:27017
     environment:
-      MONGODB_ADVERTISED_HOSTNAME: mongodb-primary
-      MONGODB_REPLICA_SET_MODE: primary
-      MONGODB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
-      MONGODB_REPLICA_SET_KEY: replicaSetKey4812
-      MONGODB_DATABASE: ${MONGODB_DATABASE}
-      MONGODB_USERNAME: ${MONGODB_USERNAME}
-      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+      - MONGO_DB_USERNAME=${MONGODB_USERNAME}
+      - MONGO_DB_PASSWORD=${MONGODB_PASSWORD}
+      - MONGODB_DATABASE=${MONGODB_DATABASE}
+      - MONGODB_USERNAME=${MONGODB_USERNAME}
+      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
     volumes:
-      - mongodb_data:/bitnami
-      - ./init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh
-
-  mongodb-secondary:
-    image: bitnami/mongodb:6.0
-    depends_on:
-      - mongodb-primary
-    environment:
-      - MONGODB_REPLICA_SET_MODE=secondary
-      - MONGODB_INITIAL_PRIMARY_HOST=mongodb-primary
-      - MONGODB_INITIAL_PRIMARY_PORT_NUMBER=${MONGODB_PORT}
-      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
-      - MONGODB_REPLICA_SET_KEY=replicaSetKey4812
-
-  mongodb-arbiter:
-    image: bitnami/mongodb:6.0
-    depends_on:
-      - mongodb-primary
-    environment:
-      - MONGODB_REPLICA_SET_MODE=arbiter
-      - MONGODB_INITIAL_PRIMARY_HOST=mongodb-primary
-      - MONGODB_INITIAL_PRIMARY_PORT_NUMBER=${MONGODB_PORT}
-      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
-      - MONGODB_REPLICA_SET_KEY=replicaSetKey4812
+      - ./init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
+      - mongodb_data:/data/db
 
 volumes:
   mongodb_data:
