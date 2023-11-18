@@ -75,7 +75,7 @@ class ConceptController (
             return
         }
         conceptService.updateTopic(conceptId, update.text)
-        message { "Title updated. What to do next?" }
+        message { "Topic updated. What to do next?" }
             .inlineKeyboardMarkup (newConceptKeyboard)
             .send(user, bot)
     }

@@ -1,5 +1,7 @@
 package com.mibe.thinktory.service.topic
 
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
 @Service
@@ -23,6 +25,10 @@ class TopicServiceImpl(
         return topicRepository.findByName(topic)?: topicRepository.save(Topic(name = topic))
     }
 
+    override fun getTopicByName(userId: Long, topic: String): Topic {
+        return topicRepository.findByName(topic)!!
+    }
+
     override fun updateTopic(userId: Long, topicId: String, updatedTopic: Topic): Topic {
         TODO("Not yet implemented")
     }
@@ -30,4 +36,11 @@ class TopicServiceImpl(
     override fun deleteTopic(userId: Long, topicId: String) {
         TODO("Not yet implemented")
     }
+
+    override fun getTopicsBySubstring(userId: Long, topicSubstring: String): List<Topic> {
+        return topicRepository.findByNameLike("%$topicSubstring%")
+//        return topicRepository.findByNameLike("%${topicSubstring.lowercase()}%", getTopicsPageRequest()).toList()
+    }
+
+    private fun getTopicsPageRequest() = PageRequest.of(0, 5, Sort.by("name").ascending())
 }
