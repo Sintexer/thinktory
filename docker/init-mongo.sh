@@ -4,8 +4,8 @@ mongosh <<EOF
 use $MONGODB_DATABASE
 
 db.createUser({
-  user: '$MONGODB_USERNAME',
-  pwd: '$MONGODB_PASSWORD',
+  user: '$MONGO_DB_USERNAME',
+  pwd: '$MONGO_DB_PASSWORD',
   roles: [{
     role: 'readWrite',
     db: '$MONGODB_DATABASE'

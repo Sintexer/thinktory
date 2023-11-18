@@ -1,9 +1,10 @@
 package com.mibe.thinktory.service.topic
 
 interface TopicService {
-    fun getAllTopics(userId: String): List<Topic>
-    fun getTopicById(userId: String, topicId: String): Topic
-    fun createTopic(userId: String, topic: Topic): Topic
-    fun updateTopic(userId: String, topicId: String, updatedTopic: Topic): Topic
-    fun deleteTopic(userId: String, topicId: String)
+    fun getAllTopics(userId: Long): List<Topic>
+    fun getTopicById(userId: Long, topicId: String): Topic
+    fun createTopic(userId: Long, topic: Topic): Topic
+    fun getOrCreateTopicByName(userId: Long, topic: String): Topic
+    fun updateTopic(userId: Long, topicId: String, updatedTopic: Topic): Topic
+    fun deleteTopic(userId: Long, topicId: String)
 }

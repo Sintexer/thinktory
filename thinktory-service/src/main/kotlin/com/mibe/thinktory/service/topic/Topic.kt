@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document
 @Document(collection = "topics")
 data class Topic(
         @Id val id: ObjectId = ObjectId.get(),
-        val bookId: ObjectId,
         val name: String,
         @DBRef val parent: Topic? = null
 )

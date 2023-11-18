@@ -7,4 +7,6 @@ interface ConceptService {
     fun createConceptFromTheory(userId: Long, theory: String): Concept
     fun getRecentUserConcept(userId: Long): Concept?
     fun updateTitle(conceptId: ObjectId, title: String): Concept
+    fun updateTopic(conceptId: ObjectId, topicName: String): Concept
+    fun getById(conceptId: ObjectId): Concept
 }
