@@ -7,7 +7,5 @@ import org.springframework.data.mongodb.repository.MongoRepository
 
 interface TopicRepository : MongoRepository<Topic, ObjectId> {
     fun findByName(name: String): Topic?
-
-//    fun findByNameLike(name: String, page: PageRequest): Page<Topic>
-    fun findByNameLike(name: String): List<Topic>
+    fun findByNameRegex(nameRegex: String, pageRequest: PageRequest): Page<Topic>
 }

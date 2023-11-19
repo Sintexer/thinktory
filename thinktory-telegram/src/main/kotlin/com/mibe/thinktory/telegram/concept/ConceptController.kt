@@ -7,7 +7,6 @@ import eu.vendeli.tgbot.TelegramBot
 import eu.vendeli.tgbot.annotations.CommandHandler
 import eu.vendeli.tgbot.annotations.InputHandler
 import eu.vendeli.tgbot.api.message
-import eu.vendeli.tgbot.types.ParseMode
 import eu.vendeli.tgbot.types.User
 import eu.vendeli.tgbot.types.internal.ProcessedUpdate
 import eu.vendeli.tgbot.utils.builders.InlineKeyboardMarkupBuilder

@@ -1,5 +1,6 @@
 package com.mibe.thinktory.service.topic
 
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
@@ -37,9 +38,8 @@ class TopicServiceImpl(
         TODO("Not yet implemented")
     }
 
-    override fun getTopicsBySubstring(userId: Long, topicSubstring: String): List<Topic> {
-        return topicRepository.findByNameLike("%$topicSubstring%")
-//        return topicRepository.findByNameLike("%${topicSubstring.lowercase()}%", getTopicsPageRequest()).toList()
+    override fun getTopicsBySubstring(userId: Long, topicSubstring: String): Page<Topic> {
+        return topicRepository.findByNameRegex(".*${topicSubstring}.*", getTopicsPageRequest())
     }
 
     private fun getTopicsPageRequest() = PageRequest.of(0, 5, Sort.by("name").ascending())

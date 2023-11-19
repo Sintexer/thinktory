@@ -51,7 +51,7 @@ class QuizController (
     private suspend fun topicSearchVariants(topicSubstring: String, user: User, bot: TelegramBot) {
         val topics = topicService.getTopicsBySubstring(user.id, topicSubstring)
         bot.inputListener.set(user.id, "topicQueryInput")
-        if (topics.isEmpty()) {
+        if (topics.isEmpty) {
             message { "Can't find any topic by provided substring. Enter another topic substring" }
                 .inlineKeyboardMarkup {
                     "Go to main quiz menu" callback "quiz"
