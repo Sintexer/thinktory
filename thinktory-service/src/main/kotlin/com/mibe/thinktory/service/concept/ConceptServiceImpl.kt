@@ -2,6 +2,9 @@ package com.mibe.thinktory.service.concept
 
 import com.mibe.thinktory.service.topic.TopicService
 import org.bson.types.ObjectId
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
 @Service
@@ -36,5 +39,12 @@ class ConceptServiceImpl(
 
     override fun getById(conceptId: ObjectId): Concept {
         return conceptRepository.findById(conceptId).get()
+    }
+
+    private val conceptSortOrder = Sort.by("title").descending()
+        .and(Sort.by("lastUpdate").descending())
+
+    override fun getAll(userId: Long): Page<Concept> {
+        return conceptRepository.findAllByUserId(userId, PageRequest.of(0, 1000, conceptSortOrder))
     }
 }

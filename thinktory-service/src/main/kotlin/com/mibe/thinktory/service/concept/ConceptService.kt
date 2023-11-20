@@ -1,6 +1,7 @@
 package com.mibe.thinktory.service.concept
 
 import org.bson.types.ObjectId
+import org.springframework.data.domain.Page
 
 interface ConceptService {
     fun createConcept(bookId: ObjectId, concept: Concept): Concept
@@ -9,4 +10,6 @@ interface ConceptService {
     fun updateTitle(conceptId: ObjectId, title: String): Concept
     fun updateTopic(conceptId: ObjectId, topicName: String): Concept
     fun getById(conceptId: ObjectId): Concept
+
+    fun getAll(userId: Long): Page<Concept>
 }

@@ -6,6 +6,7 @@ import com.mibe.thinktory.telegram.user.UserDataKeys
 import eu.vendeli.tgbot.TelegramBot
 import eu.vendeli.tgbot.annotations.CommandHandler
 import eu.vendeli.tgbot.annotations.InputHandler
+import eu.vendeli.tgbot.annotations.ParamMapping
 import eu.vendeli.tgbot.api.message
 import eu.vendeli.tgbot.types.User
 import eu.vendeli.tgbot.types.internal.ProcessedUpdate
@@ -93,7 +94,19 @@ class ConceptController (
     }
 
     @CommandHandler(["viewConcept"])
-    suspend fun viewConcept(user: User, bot: TelegramBot) {
+    suspend fun viewConcept(@ParamMapping("conceptId") conceptId: ObjectId?, user: User, bot: TelegramBot) {
+        if (conceptId != null) {
+            sendConcept(conceptService.getById(conceptId), user, bot)
+            return
+        }
+
+        sendConceptFromUserData(user, bot)
+    }
+
+    private suspend fun ConceptController.sendConceptFromUserData(
+        user: User,
+        bot: TelegramBot
+    ) {
         val concept = getCurrentConcept(user, bot)
         if (concept == null) {
             message { "Pick a concept first" }.send(user, bot)
