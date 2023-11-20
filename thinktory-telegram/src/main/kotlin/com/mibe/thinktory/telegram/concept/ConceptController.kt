@@ -94,9 +94,9 @@ class ConceptController (
     }
 
     @CommandHandler(["viewConcept"])
-    suspend fun viewConcept(@ParamMapping("conceptId") conceptId: ObjectId?, user: User, bot: TelegramBot) {
+    suspend fun viewConcept(@ParamMapping("conceptId") conceptId: String?, user: User, bot: TelegramBot) {
         if (conceptId != null) {
-            sendConcept(conceptService.getById(conceptId), user, bot)
+            sendConcept(conceptService.getById(ObjectId(conceptId)), user, bot)
             return
         }
 

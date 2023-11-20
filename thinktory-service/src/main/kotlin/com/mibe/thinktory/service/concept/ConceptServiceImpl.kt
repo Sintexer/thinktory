@@ -1,16 +1,22 @@
 package com.mibe.thinktory.service.concept
 
+import com.mibe.thinktory.service.concept.exception.ConceptNotFoundException
+import com.mibe.thinktory.service.concept.exception.IllegalConceptPageException
 import com.mibe.thinktory.service.topic.TopicService
 import org.bson.types.ObjectId
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
+
 @Service
 class ConceptServiceImpl(
     private val conceptRepository: ConceptRepository,
     private val topicService: TopicService,
+    @Value("\${thinktory.concepts.pageSize:5}")
+    private val pageSize: Int
 ) : ConceptService {
 
     override fun createConcept(bookId: ObjectId, concept: Concept): Concept {
@@ -44,7 +50,16 @@ class ConceptServiceImpl(
     private val conceptSortOrder = Sort.by("title").descending()
         .and(Sort.by("lastUpdate").descending())
 
-    override fun getAll(userId: Long): Page<Concept> {
-        return conceptRepository.findAllByUserId(userId, PageRequest.of(0, 1000, conceptSortOrder))
+    override fun getAll(userId: Long, query: ConceptsQuery): Page<Concept> {
+        if (query.page < 0) {
+            throw IllegalConceptPageException(query.page, "Page number is negative")
+        }
+        val pageRequest = PageRequest.of(query.page, pageSize)
+        val conceptsPage = conceptRepository.findAllByUserId(userId, pageRequest)
+        if (query.page >= conceptsPage.totalPages) {
+            throw IllegalConceptPageException(query.page, "Page number exceeds max page: ${conceptsPage.totalPages}")
+        }
+
+        return conceptsPage
     }
 }

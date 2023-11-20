@@ -23,7 +23,7 @@ class ConceptsSearchController(
     }
 
     private suspend fun conceptsSearchByQuery(query: ConceptsQuery, user: User, bot: TelegramBot) {
-        val conceptsPage = conceptService.getAll(user.id)
+        val conceptsPage = conceptService.getAll(user.id, query)
 //      TODO concept substring input //  bot.inputListener.set(user.id, "topicQueryInput")
         if (conceptsPage.isEmpty) {
             replyPageIsEmpty(query, user, bot)
