@@ -6,4 +6,6 @@ object UserDataKeys {
     val ACTIVE_TOPIC = "activeTopic"
     val TOPICS_PAGE = "topicsPage"
     val CURRENT_TOPICS_QUERY = "topicsQuery"
+
+    val CONCEPT_SEARCH_MESSAGE_ID = "conceptSearchMessageId"
 }
