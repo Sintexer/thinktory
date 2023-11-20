@@ -38,9 +38,10 @@ class TopicServiceImpl(
         TODO("Not yet implemented")
     }
 
-    override fun getTopicsBySubstring(userId: Long, topicSubstring: String): Page<Topic> {
-        return topicRepository.findByNameRegex(".*${topicSubstring}.*", getTopicsPageRequest())
+    override fun getTopics(userId: Long, topicSearchQuery: TopicSearchQuery): Page<Topic> {
+        val (topicSubstring, page) = topicSearchQuery
+        return topicRepository.findByNameRegex(".*$topicSubstring.*", getTopicsPageRequest(page))
     }
 
-    private fun getTopicsPageRequest() = PageRequest.of(0, 5, Sort.by("name").ascending())
+    private fun getTopicsPageRequest(page: Int) = PageRequest.of(page, 5, Sort.by("name").ascending())
 }

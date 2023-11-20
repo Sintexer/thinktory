@@ -1,7 +1,10 @@
 package com.mibe.thinktory.telegram.quiz
 
 import com.mibe.thinktory.service.concept.ConceptService
+import com.mibe.thinktory.service.topic.TopicSearchQuery
 import com.mibe.thinktory.service.topic.TopicService
+import com.mibe.thinktory.service.topic.nextPage
+import com.mibe.thinktory.service.topic.prevPage
 import com.mibe.thinktory.telegram.user.UserDataKeys
 import eu.vendeli.tgbot.TelegramBot
 import eu.vendeli.tgbot.annotations.CommandHandler
@@ -38,26 +41,50 @@ class QuizController (
         "Stop quiz" callback "stopQuiz"
     }
 
+    @CommandHandler(["nextConcept"])
+    suspend fun nextConcept(user: User, bot: TelegramBot) {
+        TODO()
+    }
+
     @CommandHandler(["changeTopicQuery"])
     suspend fun changeTopic(user: User, bot: TelegramBot) {
-        topicSearchVariants("", user, bot)
+        topicSearchVariants(TopicSearchQuery("", 0), user, bot)
     }
 
     @InputHandler(["topicQueryInput"])
-    suspend fun topicInputSearchCatch(update: ProcessedUpdate, user: User, bot: TelegramBot) {
-        topicSearchVariants(update.text, user, bot)
+    suspend fun topicInputSearchCatch(update: ProcessedUpdate,
+                                      user: User,
+                                      bot: TelegramBot) {
+        topicSearchVariants(TopicSearchQuery(update.text, 0), user, bot)
     }
 
-    private suspend fun topicSearchVariants(topicSubstring: String, user: User, bot: TelegramBot) {
-        val topics = topicService.getTopicsBySubstring(user.id, topicSubstring)
+    @CommandHandler(["thisTopicsPage"])
+    suspend fun thisTopicsPage(user: User, bot: TelegramBot) {
+        val currentTopicsQuery = quizService.getCurrentTopicsQuery(user, bot) ?: TopicSearchQuery()
+        topicSearchVariants(currentTopicsQuery, user, bot)
+    }
+
+    @CommandHandler(["nextTopicsPage"])
+    suspend fun nextTopicsPage(user: User, bot: TelegramBot) {
+        topicSearchVariants(quizService.getNextTopicsPageQuery(user, bot), user, bot)
+    }
+
+    @CommandHandler(["prevTopicsPage"])
+    suspend fun prevTopicsPage(user: User, bot: TelegramBot) {
+        topicSearchVariants(quizService.getPrevTopicsPageQuery(user, bot), user, bot)
+    }
+
+    private suspend fun topicSearchVariants(topicSearchQuery: TopicSearchQuery, user: User, bot: TelegramBot) {
+        val topics = topicService.getTopics(user.id, topicSearchQuery)
+        quizService.setCurrentTopicsQuery(topicSearchQuery, user, bot)
         bot.inputListener.set(user.id, "topicQueryInput")
         if (topics.isEmpty) {
-            message { "Can't find any topic by provided substring. Enter another topic substring" }
+            message { "Can't find any topic by provided substring: ${topicSearchQuery.topicSubstring}. " +
+                    "Enter another topic substring" }
                 .inlineKeyboardMarkup {
                     "Go to main quiz menu" callback "quiz"
                 }
                 .send(user, bot)
-            return
         } else {
             message { "Found something. Choose one of these or enter another topic substring to continue search:" }
                 .inlineKeyboardMarkup {
@@ -65,6 +92,10 @@ class QuizController (
                         it callback "changeTopic?topic=${it}"
                         br()
                     }
+                    "<" callback "prevTopicsPage"
+                    "pageNumber" callback "thisTopicsPage"
+                    ">" callback "nextTopicsPage"
+                    br()
                     "Go to main quiz menu" callback "quiz"
                 }
                 .send(user, bot)

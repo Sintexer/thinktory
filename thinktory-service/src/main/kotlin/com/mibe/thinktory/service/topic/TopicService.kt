@@ -10,5 +10,5 @@ interface TopicService {
     fun getTopicByName(userId: Long, topic: String): Topic
     fun updateTopic(userId: Long, topicId: String, updatedTopic: Topic): Topic
     fun deleteTopic(userId: Long, topicId: String)
-    fun getTopicsBySubstring(userId: Long, topicSubstring: String): Page<Topic>
+    fun getTopics(userId: Long, topicSearchQuery: TopicSearchQuery): Page<Topic>
 }
