@@ -119,10 +119,6 @@ class ConceptsSearchController(
         return "concepts?page=${page}"
     }
 
-    private suspend fun replyPageIsEmpty(query: ConceptsQuery, user: User, bot: TelegramBot) {
-        emptyResultMessage().send(user, bot)
-    }
-
     private fun emptyResultMessage() = message {
         getEmptySearchResultText()
     }.inlineKeyboardMarkup {
@@ -135,9 +131,4 @@ class ConceptsSearchController(
 
     private fun getEmptySearchResultText() = "Can't find any concept by provided substring: ${"TODO()"}. " +
             "Enter another concept title query"
-
-    private data class SearchData(
-        val conceptsQuery: ConceptsQuery,
-        val paginationMessageId: Long? = null
-    )
 }
