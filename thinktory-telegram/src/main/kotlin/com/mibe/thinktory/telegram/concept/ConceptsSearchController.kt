@@ -4,12 +4,14 @@ import com.mibe.thinktory.service.concept.Concept
 import com.mibe.thinktory.service.concept.ConceptService
 import com.mibe.thinktory.service.concept.ConceptsQuery
 import com.mibe.thinktory.telegram.message.MessageService
+import com.mibe.thinktory.telegram.user.UserDataKeys
 import eu.vendeli.tgbot.TelegramBot
 import eu.vendeli.tgbot.annotations.CommandHandler
 import eu.vendeli.tgbot.annotations.InputHandler
 import eu.vendeli.tgbot.annotations.ParamMapping
 import eu.vendeli.tgbot.api.message
 import eu.vendeli.tgbot.types.User
+import eu.vendeli.tgbot.types.internal.MessageUpdate
 import eu.vendeli.tgbot.types.internal.ProcessedUpdate
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Component
@@ -26,6 +28,7 @@ class ConceptsSearchController(
 
     @CommandHandler(["/concepts"])
     suspend fun initialSearchMenuMessage(user: User) {
+        resetSearchSubstring(user)
         val conceptsQuery = ConceptsQuery(0)
         val conceptsPage = conceptService.getPage(user.id, conceptsQuery)
         if (conceptsPage.isEmpty) {
@@ -39,14 +42,32 @@ class ConceptsSearchController(
                 .inlineKeyboardMarkup {
                     conceptViewButtons(conceptsPage)
                     paginationButtons(conceptsPage)
-                    "Back to the main menu" callback "mainMenu"
+                    searchControlButtons()
                 }
         }
     }
 
-    @InputHandler(["conceptsSearchQuery"])
+    @InputHandler(["conceptsSearchSubstring"])
+    suspend fun conceptsSearchSubstring(update: MessageUpdate, user: User) {
+        val searchSubstring = update.text
+        setSearchSubstring(user, searchSubstring)
+        conceptsSearch(user)
+    }
+
+    private fun resetSearchSubstring(user: User) = setSearchSubstring(user, "")
+
+    private fun setSearchSubstring(user: User, substring: String) {
+        bot.chatData[user, UserDataKeys.CONCEPT_SEARCH_SUBSTRING] = substring
+    }
+
+    private fun getSearchSubstring(user: User): String {
+        return bot.chatData[user, UserDataKeys.CONCEPT_SEARCH_SUBSTRING] ?: ""
+    }
+
+    @CommandHandler(["clearSearchSubstring"])
     suspend fun conceptsSearchQuery(update: ProcessedUpdate, user: User) {
-        conceptsSearch(user, ConceptsQuery(substring = update.text))
+        resetSearchSubstring(user)
+        conceptsSearch(user)
     }
 
     @CommandHandler(["concepts"])
@@ -55,13 +76,14 @@ class ConceptsSearchController(
         page: Int? = 0,
         user: User
     ) {
-        conceptsSearch(user, ConceptsQuery(page ?: 0))
+        conceptsSearch(user, page ?: 0)
     }
 
     private suspend fun conceptsSearch(
         user: User,
-        query: ConceptsQuery,
+        page: Int = 0
     ) {
+        val query = getQuery(user, page)
         setSearchSubstringInputListener(user)
         val conceptsPage = conceptService.getPage(user.id, query)
         if (conceptsPage.isEmpty) {
@@ -74,12 +96,14 @@ class ConceptsSearchController(
         messageService.sendMarkupUpdateViaLastMessage(user, CONCEPTS_SEARCH_RESULT_MESSAGE_TEXT) {
             conceptViewButtons(conceptsPage)
             paginationButtons(conceptsPage)
-            "Back to the main menu" callback "mainMenu"
+            searchControlButtons()
         }
     }
 
+    private fun getQuery(user: User, page: Int? = 0) = ConceptsQuery(page ?: 0, getSearchSubstring(user))
+
     private fun setSearchSubstringInputListener(user: User) {
-        bot.inputListener[user] = "conceptsSearchQuery"
+        bot.inputListener[user] = "conceptsSearchSubstring"
     }
 
     private fun KeyboardBuilder.conceptViewButtons(conceptsPage: Page<Concept>) {
@@ -129,6 +153,11 @@ class ConceptsSearchController(
 
     private fun getConceptsUrl(page: Int): String {
         return "concepts?page=${page}"
+    }
+
+    private fun KeyboardBuilder.searchControlButtons() {
+        "Clear search string" callback "clearSearchSubstring"
+        "Back to the main menu" callback "mainMenu"
     }
 
     private fun emptyResultMessage() = message {

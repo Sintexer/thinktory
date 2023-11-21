@@ -9,4 +9,5 @@ object UserDataKeys {
 
     val LAST_MESSAGE_ID = "lastMessageId"
     val CONCEPT_SEARCH_MESSAGE_ID = "conceptSearchMessageId"
+    val CONCEPT_SEARCH_SUBSTRING = "conceptSearchSubstring"
 }
