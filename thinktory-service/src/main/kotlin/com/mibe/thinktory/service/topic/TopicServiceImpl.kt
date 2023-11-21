@@ -1,5 +1,6 @@
 package com.mibe.thinktory.service.topic
 
+import org.bson.types.ObjectId
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -14,8 +15,8 @@ class TopicServiceImpl(
         return topicRepository.findAll()
     }
 
-    override fun getTopicById(userId: Long, topicId: String): Topic {
-        TODO("Not yet implemented")
+    override fun getTopicById(userId: Long, topicId: ObjectId): Topic {
+        return topicRepository.findById(topicId).get()
     }
 
     override fun createTopic(userId: Long, topic: Topic): Topic {
@@ -38,8 +39,8 @@ class TopicServiceImpl(
         TODO("Not yet implemented")
     }
 
-    override fun getTopics(userId: Long, topicSearchQuery: TopicSearchQuery): Page<Topic> {
-        val (topicSubstring, page) = topicSearchQuery
+    override fun getPage(userId: Long, topicSearchQuery: TopicSearchQuery): Page<Topic> {
+        val (page, topicSubstring) = topicSearchQuery
         return topicRepository.findByNameRegex(".*$topicSubstring.*", getTopicsPageRequest(page))
     }
 

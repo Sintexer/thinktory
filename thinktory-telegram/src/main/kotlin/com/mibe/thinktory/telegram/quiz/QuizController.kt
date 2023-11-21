@@ -1,10 +1,7 @@
 package com.mibe.thinktory.telegram.quiz
 
-import com.mibe.thinktory.service.concept.ConceptService
 import com.mibe.thinktory.service.topic.TopicSearchQuery
 import com.mibe.thinktory.service.topic.TopicService
-import com.mibe.thinktory.service.topic.nextPage
-import com.mibe.thinktory.service.topic.prevPage
 import com.mibe.thinktory.telegram.user.UserDataKeys
 import eu.vendeli.tgbot.TelegramBot
 import eu.vendeli.tgbot.annotations.CommandHandler
@@ -18,7 +15,6 @@ import org.springframework.stereotype.Component
 
 @Component
 class QuizController (
-    private val conceptService: ConceptService,
     private val quizService: QuizService,
     private val topicService: TopicService
 ) {
@@ -48,14 +44,14 @@ class QuizController (
 
     @CommandHandler(["changeTopicQuery"])
     suspend fun changeTopic(user: User, bot: TelegramBot) {
-        topicSearchVariants(TopicSearchQuery("", 0), user, bot)
+        topicSearchVariants(TopicSearchQuery(0, ""), user, bot)
     }
 
     @InputHandler(["topicQueryInput"])
     suspend fun topicInputSearchCatch(update: ProcessedUpdate,
                                       user: User,
                                       bot: TelegramBot) {
-        topicSearchVariants(TopicSearchQuery(update.text, 0), user, bot)
+        topicSearchVariants(TopicSearchQuery(0, update.text), user, bot)
     }
 
     @CommandHandler(["thisTopicsPage"])
@@ -75,7 +71,7 @@ class QuizController (
     }
 
     private suspend fun topicSearchVariants(topicSearchQuery: TopicSearchQuery, user: User, bot: TelegramBot) {
-        val topics = topicService.getTopics(user.id, topicSearchQuery)
+        val topics = topicService.getPage(user.id, topicSearchQuery)
         quizService.setCurrentTopicsQuery(topicSearchQuery, user, bot)
         bot.inputListener.set(user.id, "topicQueryInput")
         if (topics.isEmpty) {

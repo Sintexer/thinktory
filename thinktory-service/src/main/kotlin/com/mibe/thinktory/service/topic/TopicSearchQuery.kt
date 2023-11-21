@@ -3,8 +3,8 @@ package com.mibe.thinktory.service.topic
 import kotlin.math.max
 
 data class TopicSearchQuery(
-    val topicSubstring: String = "",
-    val page: Int = 0
+    val page: Int = 0,
+    val topicSubstring: String = ""
 ) {
 
     fun nextPage(): TopicSearchQuery {
@@ -12,7 +12,7 @@ data class TopicSearchQuery(
     }
 
     fun prevPage(): TopicSearchQuery {
-        return this.copy(page = max(page-1, 0))
+        return this.copy(page = max(page -1, 0))
     }
 }
 

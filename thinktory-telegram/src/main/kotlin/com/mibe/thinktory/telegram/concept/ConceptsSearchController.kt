@@ -3,7 +3,13 @@ package com.mibe.thinktory.telegram.concept
 import com.mibe.thinktory.service.concept.Concept
 import com.mibe.thinktory.service.concept.ConceptService
 import com.mibe.thinktory.service.concept.ConceptsQuery
+import com.mibe.thinktory.service.topic.Topic
+import com.mibe.thinktory.service.topic.TopicService
+import com.mibe.thinktory.telegram.chat.ChatDataService
+import com.mibe.thinktory.telegram.chat.DialogStackFrame
 import com.mibe.thinktory.telegram.message.MessageService
+import com.mibe.thinktory.telegram.topic.TopicRequest
+import com.mibe.thinktory.telegram.topic.TopicSelection
 import com.mibe.thinktory.telegram.user.UserDataKeys
 import eu.vendeli.tgbot.TelegramBot
 import eu.vendeli.tgbot.annotations.CommandHandler
@@ -12,17 +18,21 @@ import eu.vendeli.tgbot.annotations.ParamMapping
 import eu.vendeli.tgbot.api.message
 import eu.vendeli.tgbot.types.User
 import eu.vendeli.tgbot.types.internal.MessageUpdate
-import eu.vendeli.tgbot.types.internal.ProcessedUpdate
+import org.bson.types.ObjectId
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Component
 import eu.vendeli.tgbot.utils.builders.InlineKeyboardMarkupBuilder as KeyboardBuilder
 
 private const val CONCEPTS_SEARCH_RESULT_MESSAGE_TEXT = "Choose one of these or enter title substring to narrow the search results:"
+private const val CONCEPT_SEARCH_TOPIC_PARAM = "conceptSearchTopicParam"
 
 @Component
 class ConceptsSearchController(
     private val conceptService: ConceptService,
+    private val topicService: TopicService,
     private val messageService: MessageService,
+    private val chatDataService: ChatDataService,
+    private val topicSelection: TopicSelection,
     private val bot: TelegramBot
 ) {
 
@@ -42,6 +52,7 @@ class ConceptsSearchController(
                 .inlineKeyboardMarkup {
                     conceptViewButtons(conceptsPage)
                     paginationButtons(conceptsPage)
+                    topicControlButtons(user.id, conceptsPage.number)
                     searchControlButtons()
                 }
         }
@@ -65,7 +76,11 @@ class ConceptsSearchController(
     }
 
     @CommandHandler(["clearSearchSubstring"])
-    suspend fun conceptsSearchQuery(update: ProcessedUpdate, user: User) {
+    suspend fun conceptsSearchQuery(user: User) {
+        val hasSearchString = getSearchSubstring(user).isNotBlank()
+        if (!hasSearchString) {
+            return
+        }
         resetSearchSubstring(user)
         conceptsSearch(user)
     }
@@ -96,14 +111,23 @@ class ConceptsSearchController(
         messageService.sendMarkupUpdateViaLastMessage(user, CONCEPTS_SEARCH_RESULT_MESSAGE_TEXT) {
             conceptViewButtons(conceptsPage)
             paginationButtons(conceptsPage)
+            topicControlButtons(user.id, conceptsPage.number)
             searchControlButtons()
         }
     }
 
-    private fun getQuery(user: User, page: Int? = 0) = ConceptsQuery(page ?: 0, getSearchSubstring(user))
+    private fun getQuery(user: User, page: Int? = 0) =
+        ConceptsQuery(page ?: 0, getSearchSubstring(user), getTopicSelection(user.id))
 
     private fun setSearchSubstringInputListener(user: User) {
         bot.inputListener[user] = "conceptsSearchSubstring"
+    }
+
+    private fun KeyboardBuilder.topicControlButtons(userId: Long, page: Int) {
+        // TODO change select topic to topic name when it is selected
+        "Select topic" callback "conceptSearchSelectTopic?page=$page"
+        "Clear topic selection" callback "clearTopicSelection?page=$page"
+        br()
     }
 
     private fun KeyboardBuilder.conceptViewButtons(conceptsPage: Page<Concept>) {
@@ -172,4 +196,53 @@ class ConceptsSearchController(
 
     private fun getEmptySearchResultText() = "Can't find any concept by provided substring: ${"TODO()"}. " +
             "Enter another concept title query"
+
+    @CommandHandler(["conceptSearchSelectTopic"])
+    suspend fun conceptSearchSelectTopic(@ParamMapping("page") page: Int, user: User) {
+        val contextualData = ConceptsQuery(page, getSearchSubstring(user))
+        chatDataService.pushFrame(user.id, DialogStackFrame("conceptSearchSelectTopicResult", contextualData))
+        chatDataService.setTopicRequest(user.id, TopicRequest("topicId"))
+        topicSelection.topicSelectionStart(user)
+    }
+
+    @CommandHandler(["conceptSearchSelectTopicResult"])
+    suspend fun conceptSearchSelectTopicResult(@ParamMapping("topicId") topicIdString: String? = null, user: User) {
+        val stackFrame = chatDataService.popFrame(user.id)
+        val conceptsQuery = (stackFrame?.contextualData ?: ConceptsQuery()) as ConceptsQuery
+
+        if (topicIdString != null) {
+            val topicId = ObjectId(topicIdString)
+            if (isNewTopicId(conceptsQuery, topicId)) {
+                setTopicSelection(user.id, topicService.getTopicById(user.id, topicId))
+                conceptsSearch(user)
+                return
+            }
+        }
+
+        conceptsSearch(user, conceptsQuery.page)
+    }
+
+    private fun isNewTopicId(
+        conceptsQuery: ConceptsQuery,
+        topicId: ObjectId
+    ) = conceptsQuery.topic == null || topicId != conceptsQuery.topic?.id
+
+    @CommandHandler(["clearTopicSelection"])
+    suspend fun clearTopicSelection(user: User) {
+        getTopicSelection(user.id) ?: return
+
+        resetTopicSelection(user.id)
+        conceptsSearch(user)
+    }
+
+    private fun getTopicSelection(userId: Long) = bot.chatData.get<Topic>(userId, CONCEPT_SEARCH_TOPIC_PARAM)
+
+
+    private fun resetTopicSelection(userId: Long) {
+        setTopicSelection(userId, null)
+    }
+
+    private fun setTopicSelection(userId: Long, topic: Topic?) {
+        bot.chatData.set(userId, CONCEPT_SEARCH_TOPIC_PARAM, topic)
+    }
 }
