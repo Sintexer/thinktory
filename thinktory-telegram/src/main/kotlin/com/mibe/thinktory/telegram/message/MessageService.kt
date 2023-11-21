@@ -1,0 +1,32 @@
+package com.mibe.thinktory.telegram.message
+
+import eu.vendeli.tgbot.TelegramBot
+import eu.vendeli.tgbot.interfaces.Action
+import eu.vendeli.tgbot.types.Message
+import eu.vendeli.tgbot.types.User
+import eu.vendeli.tgbot.utils.builders.InlineKeyboardMarkupBuilder as KeyboardBuilder
+
+interface MessageService {
+
+    suspend fun sendNewMessage(user: User, messageSupplier: () -> Action<Message>)
+
+    /**
+     * Tries to edit last message markup or sends a new one
+     */
+    suspend fun sendMarkupUpdateViaLastMessage(
+        user: User,
+        newMessageText: String = "",
+        markupBlock: KeyboardBuilder.() -> Unit
+    )
+
+    suspend fun setLastMessageId(
+        bot: TelegramBot,
+        user: User,
+        messageId: Long?
+    )
+
+    suspend fun getLastMessageId(
+        bot: TelegramBot,
+        user: User
+    ): Long?
+}
