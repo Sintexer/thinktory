@@ -176,3 +176,7 @@ java -jar target/thinktory-0.0.1-SNAPSHOT.jar
 ```
 
 This command will build the project and run the application using the provided environment variables. The application should be able to connect to your MongoDB instance and interact with your Telegram bot.
+
+## application.yaml properties
+
+- `thinktory.concepts.pageSize` - concepts search result page size (default=5)

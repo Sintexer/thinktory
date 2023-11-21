@@ -6,8 +6,14 @@ import com.mibe.thinktory.service.topic.TopicService
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Query
+import org.springframework.data.mongodb.core.query.isEqualTo
+import org.springframework.data.mongodb.core.query.where
 import org.springframework.stereotype.Service
 
 
@@ -15,6 +21,7 @@ import org.springframework.stereotype.Service
 class ConceptServiceImpl(
     private val conceptRepository: ConceptRepository,
     private val topicService: TopicService,
+    private val mongoTemplate: MongoTemplate,
     @Value("\${thinktory.concepts.pageSize:5}")
     private val pageSize: Int
 ) : ConceptService {
@@ -50,16 +57,45 @@ class ConceptServiceImpl(
     private val conceptSortOrder = Sort.by("title").descending()
         .and(Sort.by("lastUpdate").descending())
 
-    override fun getAll(userId: Long, query: ConceptsQuery): Page<Concept> {
+    override fun getPage(userId: Long, query: ConceptsQuery): Page<Concept> {
+        verifyLowerPageBoundNotViolated(query)
+        val conceptsPage = getPageByUserIdAndConceptsQuery(userId, query)
+        verifyHigherPageBoundNotViolated(query, conceptsPage)
+        return conceptsPage
+    }
+
+    private fun verifyLowerPageBoundNotViolated(query: ConceptsQuery) {
         if (query.page < 0) {
             throw IllegalConceptPageException(query.page, "Page number is negative")
         }
-        val pageRequest = PageRequest.of(query.page, pageSize)
-        val conceptsPage = conceptRepository.findAllByUserId(userId, pageRequest)
+    }
+
+    private fun getPageByUserIdAndConceptsQuery(userId: Long, conceptsQuery: ConceptsQuery): Page<Concept> {
+        val pageRequest = PageRequest.of(conceptsQuery.page, pageSize)
+        val searchQuery = Query(getConceptSubstringSearchCriteria(userId, conceptsQuery))
+        val count = mongoTemplate.count(searchQuery, Concept::class.java)
+        val pagedSearchQuery = searchQuery.with(pageRequest)
+        val conceptsList = mongoTemplate.find(pagedSearchQuery, Concept::class.java)
+
+        return PageImpl(conceptsList, pageRequest, count)
+    }
+
+    private fun getConceptSubstringSearchCriteria(userId: Long, conceptsQuery: ConceptsQuery): Criteria {
+        val criteria = where(Concept::userId).isEqualTo(userId)
+        if (conceptsQuery.substring.isBlank()) {
+            return criteria
+        }
+
+        val pattern = mapToLowercaseSubstringPattern(conceptsQuery.substring)
+        criteria.andOperator(where(Concept::title).regex(pattern))
+        return criteria
+    }
+
+    private fun mapToLowercaseSubstringPattern(substring: String) = ".*${substring.lowercase()}.*"
+
+    private fun verifyHigherPageBoundNotViolated(query: ConceptsQuery, conceptsPage: Page<Concept>) {
         if (query.page >= conceptsPage.totalPages) {
             throw IllegalConceptPageException(query.page, "Page number exceeds max page: ${conceptsPage.totalPages}")
         }
-
-        return conceptsPage
     }
 }

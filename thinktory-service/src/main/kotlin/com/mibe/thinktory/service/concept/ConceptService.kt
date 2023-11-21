@@ -11,5 +11,5 @@ interface ConceptService {
     fun updateTopic(conceptId: ObjectId, topicName: String): Concept
     fun getById(conceptId: ObjectId): Concept
 
-    fun getAll(userId: Long, query: ConceptsQuery): Page<Concept>
+    fun getPage(userId: Long, query: ConceptsQuery): Page<Concept>
 }

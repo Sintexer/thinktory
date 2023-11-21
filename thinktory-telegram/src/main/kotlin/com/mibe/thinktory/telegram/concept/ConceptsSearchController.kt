@@ -4,40 +4,36 @@ import com.mibe.thinktory.service.concept.Concept
 import com.mibe.thinktory.service.concept.ConceptService
 import com.mibe.thinktory.service.concept.ConceptsQuery
 import com.mibe.thinktory.telegram.message.MessageService
-import com.mibe.thinktory.telegram.user.UserDataKeys
 import eu.vendeli.tgbot.TelegramBot
 import eu.vendeli.tgbot.annotations.CommandHandler
+import eu.vendeli.tgbot.annotations.InputHandler
 import eu.vendeli.tgbot.annotations.ParamMapping
-import eu.vendeli.tgbot.api.editMarkup
 import eu.vendeli.tgbot.api.message
-import eu.vendeli.tgbot.interfaces.Action
-import eu.vendeli.tgbot.interfaces.features.MarkupFeature
-import eu.vendeli.tgbot.types.Message
 import eu.vendeli.tgbot.types.User
-import eu.vendeli.tgbot.types.internal.Response
-import eu.vendeli.tgbot.types.internal.getOrNull
-import kotlinx.coroutines.Deferred
+import eu.vendeli.tgbot.types.internal.ProcessedUpdate
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Component
 import eu.vendeli.tgbot.utils.builders.InlineKeyboardMarkupBuilder as KeyboardBuilder
 
-private const val CONCEPTS_SEARCH_RESULT_MESSAGE_TEXT = "Choose one of these or enter another topic substring to narrow the search results:"
+private const val CONCEPTS_SEARCH_RESULT_MESSAGE_TEXT = "Choose one of these or enter title substring to narrow the search results:"
 
 @Component
 class ConceptsSearchController(
     private val conceptService: ConceptService,
-    private val messageService: MessageService
+    private val messageService: MessageService,
+    private val bot: TelegramBot
 ) {
 
     @CommandHandler(["/concepts"])
     suspend fun initialSearchMenuMessage(user: User) {
         val conceptsQuery = ConceptsQuery(0)
-        val conceptsPage = conceptService.getAll(user.id, conceptsQuery)
+        val conceptsPage = conceptService.getPage(user.id, conceptsQuery)
         if (conceptsPage.isEmpty) {
             messageService.sendNewMessage(user) { emptyResultMessage() }
             return
         }
 
+        setSearchSubstringInputListener(user)
         messageService.sendNewMessage(user) {
             message { CONCEPTS_SEARCH_RESULT_MESSAGE_TEXT }
                 .inlineKeyboardMarkup {
@@ -48,14 +44,26 @@ class ConceptsSearchController(
         }
     }
 
+    @InputHandler(["conceptsSearchQuery"])
+    suspend fun conceptsSearchQuery(update: ProcessedUpdate, user: User) {
+        conceptsSearch(user, ConceptsQuery(substring = update.text))
+    }
+
     @CommandHandler(["concepts"])
     suspend fun conceptsSearch(
         @ParamMapping("page")
         page: Int? = 0,
         user: User
     ) {
-        val query = ConceptsQuery(page ?: 0)
-        val conceptsPage = conceptService.getAll(user.id, query)
+        conceptsSearch(user, ConceptsQuery(page ?: 0))
+    }
+
+    private suspend fun conceptsSearch(
+        user: User,
+        query: ConceptsQuery,
+    ) {
+        setSearchSubstringInputListener(user)
+        val conceptsPage = conceptService.getPage(user.id, query)
         if (conceptsPage.isEmpty) {
             messageService.sendMarkupUpdateViaLastMessage(user, getEmptySearchResultText()) {
                 emptyResultMenu()
@@ -68,6 +76,10 @@ class ConceptsSearchController(
             paginationButtons(conceptsPage)
             "Back to the main menu" callback "mainMenu"
         }
+    }
+
+    private fun setSearchSubstringInputListener(user: User) {
+        bot.inputListener[user] = "conceptsSearchQuery"
     }
 
     private fun KeyboardBuilder.conceptViewButtons(conceptsPage: Page<Concept>) {
