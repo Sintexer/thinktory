@@ -5,7 +5,7 @@ import com.mibe.thinktory.service.topic.TopicSearchQuery
 import com.mibe.thinktory.service.topic.TopicService
 import com.mibe.thinktory.telegram.chat.ChatDataService
 import com.mibe.thinktory.telegram.core.context.PagedSubstringSearchContext
-import com.mibe.thinktory.telegram.core.search.PageableBySubstringSearchWithReturn
+import com.mibe.thinktory.telegram.core.search.CallbackPageableBySubstringSearch
 import com.mibe.thinktory.telegram.message.MessageService
 import eu.vendeli.tgbot.TelegramBot
 import eu.vendeli.tgbot.annotations.CommandHandler
@@ -21,12 +21,12 @@ private const val TOPIC_SEARCH_RESULT_MESSAGE_TEXT =
     "Choose one of these or enter title substring to narrow the search results:"
 
 @Component
-class TopicSelection(
+class TopicCallbackSearch(
     private val topicService: TopicService,
     messageService: MessageService,
     chatDataService: ChatDataService,
     bot: TelegramBot
-) : PageableBySubstringSearchWithReturn<Topic, TopicSearchQuery>(
+) : CallbackPageableBySubstringSearch<Topic, TopicSearchQuery>(
     messageService, bot, { it.name }, { it.name }, "topicSearch", chatDataService
 ) {
 

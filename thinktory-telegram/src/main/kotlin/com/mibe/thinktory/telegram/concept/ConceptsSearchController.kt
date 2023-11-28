@@ -7,7 +7,7 @@ import com.mibe.thinktory.service.topic.Topic
 import com.mibe.thinktory.service.topic.TopicService
 import com.mibe.thinktory.telegram.chat.ChatDataService
 import com.mibe.thinktory.telegram.message.MessageService
-import com.mibe.thinktory.telegram.topic.TopicSelection
+import com.mibe.thinktory.telegram.topic.TopicCallbackSearch
 import com.mibe.thinktory.telegram.user.UserDataKeys
 import eu.vendeli.tgbot.TelegramBot
 import eu.vendeli.tgbot.annotations.CommandHandler
@@ -30,7 +30,7 @@ class ConceptsSearchController(
     private val topicService: TopicService,
     private val messageService: MessageService,
     private val chatDataService: ChatDataService,
-    private val topicSelection: TopicSelection,
+    private val topicCallbackSearch: TopicCallbackSearch,
     private val bot: TelegramBot
 ) {
 
@@ -198,7 +198,7 @@ class ConceptsSearchController(
     @CommandHandler(["conceptSearchSelectTopic"])
     suspend fun conceptSearchSelectTopic(@ParamMapping("page") page: Int, user: User) {
         val contextualData = ConceptsQuery(page, getSearchSubstring(user))
-        topicSelection.searchAndReturnResult(user, "conceptSearchSelectTopicResult", contextualData)
+        topicCallbackSearch.searchAndReturnResult(user, "conceptSearchSelectTopicResult", contextualData)
     }
 
     @CommandHandler(["conceptSearchSelectTopicResult"])

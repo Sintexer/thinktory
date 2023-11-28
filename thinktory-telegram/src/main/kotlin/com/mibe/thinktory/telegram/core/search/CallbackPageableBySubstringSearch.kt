@@ -6,7 +6,7 @@ import com.mibe.thinktory.telegram.message.MessageService
 import eu.vendeli.tgbot.TelegramBot
 import eu.vendeli.tgbot.types.User
 
-abstract class PageableBySubstringSearchWithReturn<T, Q>(
+abstract class CallbackPageableBySubstringSearch<T, Q>(
     messageService: MessageService,
     bot: TelegramBot,
     resultRenderer: (T) -> String,
