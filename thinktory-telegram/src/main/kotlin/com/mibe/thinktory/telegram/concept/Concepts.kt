@@ -7,7 +7,7 @@ import eu.vendeli.tgbot.utils.builders.EntitiesContextBuilder
 
 const val CONCEPT_PREVIEW_LENGTH = 40
 
-fun getMarkdnownRender(concept: Concept) : EntitiesContextBuilder.() -> String = {
+fun getMarkdownRender(concept: Concept) : EntitiesContextBuilder.() -> String = {
     "" - line(title(concept)) -
             line(topic(concept)) -
             "\n" -
