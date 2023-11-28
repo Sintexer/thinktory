@@ -27,12 +27,12 @@ class TopicCallbackSearch(
     chatDataService: ChatDataService,
     bot: TelegramBot
 ) : CallbackPageableBySubstringSearch<Topic, TopicSearchQuery>(
-    messageService, bot, { it.name }, { it.name }, "topicSearch", chatDataService
+    messageService, bot, { it.name }, "topicSearch", { it.name }, chatDataService
 ) {
 
     @CommandHandler(["searchTopicAndReturnResult"])
-    public override suspend fun searchAndReturnResult(user: User, callbackCommand: String, contextualData: Any?) {
-        super.searchAndReturnResult(user, callbackCommand, contextualData)
+    public override suspend fun searchAndReturnResult(user: User, callbackCommand: String) {
+        super.searchAndReturnResult(user, callbackCommand)
     }
 
     override fun InlineKeyboardMarkupBuilder.resetSearchSubstringButton(userId: Long) {
@@ -41,8 +41,7 @@ class TopicCallbackSearch(
 
     @CommandHandler(["resetTopicSearch"])
     suspend fun resetSearch(user: User) {
-        resetSearchSubstring(user.id)
-        search(user.id)
+        resetSearch(user.id)
     }
 
     override fun setSearchSubstringInputListener(userId: Long) {
@@ -51,8 +50,7 @@ class TopicCallbackSearch(
 
     @InputHandler(["topicSearchSubstringInput"])
     suspend fun topicSearchSubstringInput(update: ProcessedUpdate, user: User) {
-        updateSearchSubstring(user.id, update.text)
-        search(user.id)
+        searchBySubstring(user.id, update.text)
     }
 
     override fun getPage(userId: Long, query: TopicSearchQuery): Page<Topic> {
@@ -69,7 +67,7 @@ class TopicCallbackSearch(
         page: Int? = 0,
         user: User
     ) {
-        searchFromPage(user.id, page ?: 0)
+        searchFromPage(user.id, page)
     }
 
     override fun getResultMessage(page: Page<Topic>): String = TOPIC_SEARCH_RESULT_MESSAGE_TEXT

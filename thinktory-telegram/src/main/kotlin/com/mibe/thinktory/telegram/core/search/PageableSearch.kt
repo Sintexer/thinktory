@@ -11,7 +11,6 @@ abstract class PageableSearch<T, Q, C : PageableSearchContext>(
     protected val messageService: MessageService,
     protected val bot: TelegramBot,
     protected val resultRenderer: (T) -> String,
-    protected val resultExtractor: (T) -> String,
     protected val uniqueSearchKey: String
 ) : Search<Q, C>() {
 
@@ -21,8 +20,8 @@ abstract class PageableSearch<T, Q, C : PageableSearchContext>(
         search(user.id)
     }
 
-    protected open suspend fun searchFromPage(userId: Long, page: Int) {
-        updatePageIndex(userId, page)
+    protected open suspend fun searchFromPage(userId: Long, page: Int?) {
+        updatePageIndex(userId, page ?: 0)
         search(userId)
     }
 
@@ -49,13 +48,17 @@ abstract class PageableSearch<T, Q, C : PageableSearchContext>(
 
     protected open suspend fun sendPage(userId: Long, page: Page<T>) {
         messageService.sendMarkupUpdateViaLastMessage(getResultMessage(page), {
-            topicSelectButtons(userId, page)
+            selectButtons(userId, page)
             paginationButtons(page)
+            customControls(userId, page)
             searchControlButtons(userId)
         }, userId)
     }
 
-    protected open fun InlineKeyboardMarkupBuilder.topicSelectButtons(userId: Long, page: Page<T>) {
+    protected open fun InlineKeyboardMarkupBuilder.customControls(userId: Long, page: Page<T>) {
+    }
+
+    protected open fun InlineKeyboardMarkupBuilder.selectButtons(userId: Long, page: Page<T>) {
         page.forEach { result ->
             resultRenderer(result) callback getResultLink(userId, result)
             br()

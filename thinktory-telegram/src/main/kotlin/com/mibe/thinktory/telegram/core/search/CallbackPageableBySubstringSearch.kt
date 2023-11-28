@@ -10,15 +10,15 @@ abstract class CallbackPageableBySubstringSearch<T, Q>(
     messageService: MessageService,
     bot: TelegramBot,
     resultRenderer: (T) -> String,
-    resultExtractor: (T) -> String,
     uniqueSearchKey: String,
+    private val resultExtractor: (T) -> String,
     private val chatDataService: ChatDataService
 ) : PageableBySubstringSearch<T, Q>(
-    messageService, bot, resultRenderer, resultExtractor, uniqueSearchKey
+    messageService, bot, resultRenderer, uniqueSearchKey
 ) {
 
-    protected open suspend fun searchAndReturnResult(user: User, callbackCommand: String, contextualData: Any? = null) {
-        chatDataService.pushFrame(user.id, DialogStackFrame(callbackCommand, contextualData))
+    protected open suspend fun searchAndReturnResult(user: User, callbackCommand: String) {
+        chatDataService.pushFrame(user.id, DialogStackFrame(callbackCommand))
         startSearch(user)
     }
 

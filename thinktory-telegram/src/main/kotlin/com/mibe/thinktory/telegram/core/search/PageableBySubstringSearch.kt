@@ -9,14 +9,18 @@ abstract class PageableBySubstringSearch<T, Q>(
     messageService: MessageService,
     bot: TelegramBot,
     resultRenderer: (T) -> String,
-    resultExtractor: (T) -> String,
     uniqueSearchKey: String
 ) : PageableSearch<T, Q, PagedSubstringSearchContext>(
-    messageService, bot, resultRenderer, resultExtractor, uniqueSearchKey
+    messageService, bot, resultRenderer, uniqueSearchKey
 ) {
 
     protected suspend fun searchBySubstring(userId: Long, searchSubstring: String) {
         updateSearchSubstring(userId, searchSubstring)
+        search(userId)
+    }
+
+    protected suspend fun resetSearch(userId: Long) {
+        resetSearchSubstring(userId)
         search(userId)
     }
 

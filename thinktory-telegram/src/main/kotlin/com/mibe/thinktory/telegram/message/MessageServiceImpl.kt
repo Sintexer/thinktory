@@ -28,9 +28,10 @@ class MessageServiceImpl(
         userId: Long
     ) {
         val lastMessageId = getLastMessageId(bot, userId)
-        newOrEditMessage(lastMessageId, newMessageText)
+        val message = newOrEditMessage(lastMessageId, newMessageText)
             .inlineKeyboardMarkup(markupBlock)
-            .send(userId, bot)
+            .sendAsync(userId, bot).await().getOrNull()
+        setLastMessageId(bot, message?.messageId, userId)
     }
 
     private fun newOrEditMessage(lastMessageId: Long?, newMessageText: String): MarkupFeature<out Action<Message>> =
