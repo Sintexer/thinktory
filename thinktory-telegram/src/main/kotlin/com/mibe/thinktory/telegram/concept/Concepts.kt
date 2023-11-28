@@ -33,8 +33,6 @@ private fun line(text: Pair<EntityType, String>) = if (text.second.isBlank()) {
     Pair(text.first, text.second + "\n")
 }
 
-fun ConceptsQuery.toUrlParameters() = "?page=$page"
-
 fun Concept.getShortPreviewString() = getPreviewString().shortened()
 fun Concept.getPreviewString() = this.title ?: this.description?.let{ "description: $it" } ?: this.content.let{ "content: $it" }
 
