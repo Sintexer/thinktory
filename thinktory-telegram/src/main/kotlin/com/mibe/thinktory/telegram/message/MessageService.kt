@@ -4,7 +4,7 @@ import eu.vendeli.tgbot.TelegramBot
 import eu.vendeli.tgbot.interfaces.Action
 import eu.vendeli.tgbot.types.Message
 import eu.vendeli.tgbot.types.User
-import eu.vendeli.tgbot.utils.builders.InlineKeyboardMarkupBuilder as KeyboardBuilder
+import eu.vendeli.tgbot.utils.builders.InlineKeyboardMarkupBuilder
 
 interface MessageService {
 
@@ -14,19 +14,19 @@ interface MessageService {
      * Tries to edit last message markup or sends a new one
      */
     suspend fun sendMarkupUpdateViaLastMessage(
-        user: User,
         newMessageText: String = "",
-        markupBlock: KeyboardBuilder.() -> Unit
+        markupBlock: InlineKeyboardMarkupBuilder.() -> Unit,
+        userId: Long
     )
 
     suspend fun setLastMessageId(
         bot: TelegramBot,
-        user: User,
-        messageId: Long?
+        messageId: Long?,
+        userId: Long
     )
 
     suspend fun getLastMessageId(
         bot: TelegramBot,
-        user: User
+        userId: Long
     ): Long?
 }

@@ -6,9 +6,7 @@ import com.mibe.thinktory.service.concept.ConceptsQuery
 import com.mibe.thinktory.service.topic.Topic
 import com.mibe.thinktory.service.topic.TopicService
 import com.mibe.thinktory.telegram.chat.ChatDataService
-import com.mibe.thinktory.telegram.chat.DialogStackFrame
 import com.mibe.thinktory.telegram.message.MessageService
-import com.mibe.thinktory.telegram.topic.TopicRequest
 import com.mibe.thinktory.telegram.topic.TopicSelection
 import com.mibe.thinktory.telegram.user.UserDataKeys
 import eu.vendeli.tgbot.TelegramBot
@@ -102,18 +100,18 @@ class ConceptsSearchController(
         setSearchSubstringInputListener(user)
         val conceptsPage = conceptService.getPage(user.id, query)
         if (conceptsPage.isEmpty) {
-            messageService.sendMarkupUpdateViaLastMessage(user, getEmptySearchResultText()) {
+            messageService.sendMarkupUpdateViaLastMessage(getEmptySearchResultText(), {
                 emptyResultMenu()
-            }
+            }, user.id)
             return
         }
 
-        messageService.sendMarkupUpdateViaLastMessage(user, CONCEPTS_SEARCH_RESULT_MESSAGE_TEXT) {
+        messageService.sendMarkupUpdateViaLastMessage(CONCEPTS_SEARCH_RESULT_MESSAGE_TEXT, {
             conceptViewButtons(conceptsPage)
             paginationButtons(conceptsPage)
             topicControlButtons(user.id, conceptsPage.number)
             searchControlButtons()
-        }
+        }, user.id)
     }
 
     private fun getQuery(user: User, page: Int? = 0) =
@@ -200,20 +198,18 @@ class ConceptsSearchController(
     @CommandHandler(["conceptSearchSelectTopic"])
     suspend fun conceptSearchSelectTopic(@ParamMapping("page") page: Int, user: User) {
         val contextualData = ConceptsQuery(page, getSearchSubstring(user))
-        chatDataService.pushFrame(user.id, DialogStackFrame("conceptSearchSelectTopicResult", contextualData))
-        chatDataService.setTopicRequest(user.id, TopicRequest("topicId"))
-        topicSelection.topicSelectionStart(user)
+        topicSelection.searchAndReturnResult(user, "conceptSearchSelectTopicResult", contextualData)
     }
 
     @CommandHandler(["conceptSearchSelectTopicResult"])
-    suspend fun conceptSearchSelectTopicResult(@ParamMapping("topicId") topicIdString: String? = null, user: User) {
+    suspend fun conceptSearchSelectTopicResult(@ParamMapping("result") topicName: String? = null, user: User) {
         val stackFrame = chatDataService.popFrame(user.id)
         val conceptsQuery = (stackFrame?.contextualData ?: ConceptsQuery()) as ConceptsQuery
 
-        if (topicIdString != null) {
-            val topicId = ObjectId(topicIdString)
-            if (isNewTopicId(conceptsQuery, topicId)) {
-                setTopicSelection(user.id, topicService.getTopicById(user.id, topicId))
+        if (topicName != null) {
+            val topic = topicService.getTopicByName(user.id, topicName)
+            if (isNewTopicId(conceptsQuery, topic.id)) {
+                setTopicSelection(user.id, topicService.getTopicById(user.id, topic.id))
                 conceptsSearch(user)
                 return
             }

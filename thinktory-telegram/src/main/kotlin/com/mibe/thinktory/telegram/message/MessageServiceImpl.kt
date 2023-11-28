@@ -2,7 +2,6 @@ package com.mibe.thinktory.telegram.message
 
 import com.mibe.thinktory.telegram.user.UserDataKeys
 import eu.vendeli.tgbot.TelegramBot
-import eu.vendeli.tgbot.api.editMarkup
 import eu.vendeli.tgbot.api.editText
 import eu.vendeli.tgbot.api.message
 import eu.vendeli.tgbot.interfaces.Action
@@ -20,20 +19,18 @@ class MessageServiceImpl(
 
     override suspend fun sendNewMessage(user: User, messageSupplier: () -> Action<Message>) {
         val message = messageSupplier.invoke().sendAsync(user, bot).await().getOrNull()
-        setLastMessageId(bot, user, message?.messageId)
+        setLastMessageId(bot, message?.messageId, user.id)
     }
 
     override suspend fun sendMarkupUpdateViaLastMessage(
-        user: User,
         newMessageText: String,
-        markupBlock: InlineKeyboardMarkupBuilder.() -> Unit
+        markupBlock: InlineKeyboardMarkupBuilder.() -> Unit,
+        userId: Long
     ) {
-        val lastMessageId = getLastMessageId(bot, user)
-        val message = newOrEditMessage(lastMessageId, newMessageText)
+        val lastMessageId = getLastMessageId(bot, userId)
+        newOrEditMessage(lastMessageId, newMessageText)
             .inlineKeyboardMarkup(markupBlock)
-            .sendAsync(user, bot).await().getOrNull()
-
-        setLastMessageId(bot, user, message?.messageId)
+            .send(userId, bot)
     }
 
     private fun newOrEditMessage(lastMessageId: Long?, newMessageText: String): MarkupFeature<out Action<Message>> =
@@ -45,14 +42,14 @@ class MessageServiceImpl(
 
     override suspend fun setLastMessageId(
         bot: TelegramBot,
-        user: User,
-        messageId: Long?
+        messageId: Long?,
+        userId: Long
     ) {
-        bot.userData.set(user.id, UserDataKeys.LAST_MESSAGE_ID, messageId)
+        bot.userData.set(userId, UserDataKeys.LAST_MESSAGE_ID, messageId)
     }
 
     override suspend fun getLastMessageId(
         bot: TelegramBot,
-        user: User
-    ): Long? = bot.userData.get<Long>(user.id, UserDataKeys.LAST_MESSAGE_ID)
+        userId: Long
+    ): Long? = bot.userData.get<Long>(userId, UserDataKeys.LAST_MESSAGE_ID)
 }
