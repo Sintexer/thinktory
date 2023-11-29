@@ -49,7 +49,7 @@ class ConceptsSearch(
 
     private fun getTopicButtonText(userId: Long): String {
         val selectedTopicName = getSelectedTopic(userId)?.name
-        val text = if (selectedTopicName == null) "Select topic" else "topic: $selectedTopicName"
+        val text = if (selectedTopicName == null) "Select topic" else ": $selectedTopicName"
         return "$TOPIC_ICON $text"
     }
 

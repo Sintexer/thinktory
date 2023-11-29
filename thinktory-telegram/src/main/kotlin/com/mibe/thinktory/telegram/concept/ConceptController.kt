@@ -2,6 +2,9 @@ package com.mibe.thinktory.telegram.concept
 
 import com.mibe.thinktory.service.concept.Concept
 import com.mibe.thinktory.service.concept.ConceptService
+import com.mibe.thinktory.telegram.core.CONCEPT_ICON
+import com.mibe.thinktory.telegram.core.TOPIC_ICON
+import com.mibe.thinktory.telegram.message.MessageService
 import com.mibe.thinktory.telegram.user.UserDataKeys
 import eu.vendeli.tgbot.TelegramBot
 import eu.vendeli.tgbot.annotations.CommandHandler
@@ -15,13 +18,14 @@ import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
 
 @Component
-class ConceptController (
-    private val conceptService: ConceptService
+class ConceptController(
+    private val conceptService: ConceptService,
+    private val messageService: MessageService
 ) {
 
     @CommandHandler(["/newconcept", "newconcept"])
     suspend fun newConcept(user: User, bot: TelegramBot) {
-        message { "Send me the theory to build concept" }.send(user, bot)
+        message { "$CONCEPT_ICON Send me the theory to build concept" }.send(user, bot)
         bot.inputListener.set(user.id, "newConceptInput")
     }
 
@@ -29,36 +33,45 @@ class ConceptController (
     suspend fun newConceptInputCatch(update: ProcessedUpdate, user: User, bot: TelegramBot) {
         val concept = conceptService.createConceptFromTheory(user.id, update.text)
         bot.userData.set(user.id, UserDataKeys.ACTIVE_CONCEPT_ID, concept.id)
-        message { "Concept created successfully. What to do next?" }
-            .inlineKeyboardMarkup (newConceptKeyboard)
-            .send(user, bot)
+        messageService.sendNewMessage(user) { message{"Untitled concept created. What to do next?"} }
+        sendConceptWithConfigurationKeyboard(concept.id, user)
     }
 
     private val newConceptKeyboard: InlineKeyboardMarkupBuilder.() -> Unit = {
-        "Set title" callback "addTitleToConcept"
-        "Set topic" callback "addTopicToConcept"
+        "👀 Set title" callback "setConceptTitle"
+        "$TOPIC_ICON Set topic" callback "addTopicToConcept"
         "Add questions" callback "addQuestionToConcept"
         br()
         "Finish" callback "finishConcept"
     }
 
-    @CommandHandler(["addTitleToConcept"])
-    suspend fun addTitleAndDescription(user: User, bot: TelegramBot) {
-        message { "Send title you like" }.send(user, bot)
-        bot.inputListener.set(user.id, "titleInput")
+    @CommandHandler(["setConceptTitle"])
+    suspend fun setTitle(user: User, bot: TelegramBot) {
+        message { "Send title:" }.send(user, bot)
+        bot.inputListener.set(user.id, "conceptTitleInput")
     }
 
-    @InputHandler(["titleInput"])
+    @InputHandler(["conceptTitleInput"])
     suspend fun titleInputCatch(update: ProcessedUpdate, user: User, bot: TelegramBot) {
         val conceptId = bot.userData.get<ObjectId>(user.id, UserDataKeys.ACTIVE_CONCEPT_ID)
         if (conceptId == null) {
-            message { "I do not understand which concept you are trying to edit. Try to pick a concept first" }.send(user, bot)
+            messageService.sendNewMessage(
+                user,
+                "I do not understand which concept you are trying to edit. Pick a concept first"
+            )
             return
         }
         conceptService.updateTitle(conceptId, update.text)
-        message { "Title updated. What to do next?" }
-            .inlineKeyboardMarkup (newConceptKeyboard)
-            .send(user, bot)
+        messageService.sendNewMessage(user, "Title updated")
+        sendConceptWithConfigurationKeyboard(conceptId, user)
+    }
+
+    private suspend fun sendConceptWithConfigurationKeyboard(conceptId: ObjectId, user: User) {
+        val concept = conceptService.getById(conceptId)
+        messageService.sendNewMessage(user) {
+            message(getMarkdownRender(concept))
+                .inlineKeyboardMarkup(newConceptKeyboard)
+        }
     }
 
     @CommandHandler(["addTopicToConcept"])
@@ -71,32 +84,40 @@ class ConceptController (
     suspend fun topicInputCatch(update: ProcessedUpdate, user: User, bot: TelegramBot) {
         val conceptId = bot.userData.get<ObjectId>(user.id, UserDataKeys.ACTIVE_CONCEPT_ID)
         if (conceptId == null) {
-            message { "I do not understand which concept you are trying to edit. Try to pick a concept first" }.send(user, bot)
+            messageService.sendNewMessage(
+                user,
+                "I do not understand which concept you are trying to edit. Pick a concept first"
+            )
             return
         }
         conceptService.updateTopic(conceptId, update.text)
-        message { "Topic updated. What to do next?" }
-            .inlineKeyboardMarkup (newConceptKeyboard)
-            .send(user, bot)
+        messageService.sendNewMessage(user, "Topic updated")
+        sendConceptWithConfigurationKeyboard(conceptId, user)
     }
 
     @CommandHandler(["finishConcept"])
     suspend fun finishConcept(user: User, bot: TelegramBot) {
-        message { "Concept created" }
-            .inlineKeyboardMarkup(finishConceptKeyboard)
-            .send(user, bot)
+        val concept = getCurrentConcept(user, bot) ?: return
+        messageService.sendNewMessage(user) {
+            message(getMarkdownRender(concept))
+                .inlineKeyboardMarkup(finishConceptKeyboard)
+        }
         bot.inputListener.set(user.id, "topicInput")
     }
 
     private val finishConceptKeyboard: InlineKeyboardMarkupBuilder.() -> Unit = {
-        "View created concept" callback "viewConcept"
         "Create another concept" callback "newconcept"
+        "Go to main menu" callback "mainMenu"
     }
 
     @CommandHandler(["viewConcept"])
     suspend fun viewConcept(@ParamMapping("conceptId") conceptId: String?, user: User, bot: TelegramBot) {
         if (conceptId != null) {
-            sendConcept(conceptService.getById(ObjectId(conceptId)), user, bot)
+            val concept = getCurrentConcept(user, bot) ?: return
+            messageService.sendNewMessage(user) {
+                message(getMarkdownRender(concept))
+                    .inlineKeyboardMarkup(finishConceptKeyboard)
+            }
             return
         }
 

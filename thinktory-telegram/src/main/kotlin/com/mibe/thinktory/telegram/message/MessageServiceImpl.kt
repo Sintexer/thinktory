@@ -7,13 +7,11 @@ import eu.vendeli.tgbot.api.message
 import eu.vendeli.tgbot.interfaces.Action
 import eu.vendeli.tgbot.interfaces.features.MarkupFeature
 import eu.vendeli.tgbot.types.Message
-import eu.vendeli.tgbot.types.Update
 import eu.vendeli.tgbot.types.User
 import eu.vendeli.tgbot.types.internal.ProcessedUpdate
 import eu.vendeli.tgbot.types.internal.getOrNull
 import eu.vendeli.tgbot.types.internal.userOrNull
 import eu.vendeli.tgbot.utils.builders.InlineKeyboardMarkupBuilder
-import eu.vendeli.tgbot.utils.processUpdate
 import org.springframework.stereotype.Service
 
 @Service
@@ -28,6 +26,11 @@ class MessageServiceImpl(
 
     override suspend fun sendNewMessage(user: User, messageSupplier: () -> Action<Message>) {
         val message = messageSupplier.invoke().sendAsync(user, bot).await().getOrNull()
+        setLastMessageId(bot, message?.messageId, user.id)
+    }
+
+    override suspend fun sendNewMessage(user: User, messageSupplier: String) {
+        val message = message { messageSupplier }.sendAsync(user, bot).await().getOrNull()
         setLastMessageId(bot, message?.messageId, user.id)
     }
 
