@@ -1,8 +1,6 @@
 package com.mibe.thinktory.telegram.start
 
-import com.mibe.thinktory.service.book.BookService
 import com.mibe.thinktory.telegram.message.MessageService
-import com.mibe.thinktory.telegram.user.UserDataKeys
 import eu.vendeli.tgbot.TelegramBot
 import eu.vendeli.tgbot.annotations.CommandHandler
 import eu.vendeli.tgbot.api.message
