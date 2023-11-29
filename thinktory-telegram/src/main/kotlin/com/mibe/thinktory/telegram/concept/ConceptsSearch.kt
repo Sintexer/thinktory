@@ -3,8 +3,11 @@ package com.mibe.thinktory.telegram.concept
 import com.mibe.thinktory.service.concept.Concept
 import com.mibe.thinktory.service.concept.ConceptService
 import com.mibe.thinktory.service.concept.ConceptsQuery
+import com.mibe.thinktory.service.topic.Topic
 import com.mibe.thinktory.service.topic.TopicService
 import com.mibe.thinktory.telegram.chat.ChatDataService
+import com.mibe.thinktory.telegram.core.CONCEPT_ICON
+import com.mibe.thinktory.telegram.core.TOPIC_ICON
 import com.mibe.thinktory.telegram.core.context.PagedSubstringSearchContext
 import com.mibe.thinktory.telegram.core.search.PageableBySubstringSearch
 import com.mibe.thinktory.telegram.message.MessageService
@@ -21,7 +24,7 @@ import org.springframework.data.domain.Page
 import org.springframework.stereotype.Component
 
 private const val CONCEPTS_SEARCH_RESULT_MESSAGE_TEXT =
-    "Choose one of these or enter title substring to narrow the search results:"
+    "👀 Choose one of these or send substring to narrow the search results:"
 private const val CONCEPT_SEARCH_TOPIC_PARAM = "conceptSearchTopicParam"
 
 @Component
@@ -33,14 +36,21 @@ class ConceptsSearch(
     messageService: MessageService,
     bot: TelegramBot
 ) : PageableBySubstringSearch<Concept, ConceptsQuery>(
-    messageService, bot, { it.title ?: "unknown" }, "conceptSearch"
+    messageService, bot, { "$CONCEPT_ICON ${it.getPreviewString()}" }, "conceptSearch"
 ) {
 
+    // Topic selection
+
     override fun InlineKeyboardMarkupBuilder.customControls(userId: Long, page: Page<Concept>) {
-        // TODO change select topic to topic name when it is selected
-        "Select topic" callback "conceptSearchSelectTopic"
+        getTopicButtonText(userId) callback "conceptSearchSelectTopic"
         "Clear topic selection" callback "clearTopicSelection"
         br()
+    }
+
+    private fun getTopicButtonText(userId: Long): String {
+        val selectedTopicName = getSelectedTopic(userId)?.name
+        val text = if (selectedTopicName == null) "Select topic" else "topic: $selectedTopicName"
+        return "$TOPIC_ICON $text"
     }
 
     @CommandHandler(["conceptSearchSelectTopic"])
@@ -49,32 +59,48 @@ class ConceptsSearch(
     }
 
     @CommandHandler(["conceptSearchSelectTopicResult"])
-    suspend fun conceptSearchSelectTopicResult(@ParamMapping("result") topicName: String? = null, user: User) {
+    suspend fun conceptSearchSelectTopicResult(@ParamMapping("searchResult") topicName: String? = null, user: User) {
         chatDataService.popFrame(user.id)
-        updateSelectedTopic(user, topicName)
+        updateSelectedTopic(user.id, topicName)
         search(user.id)
     }
 
-    private fun updateSelectedTopic(user: User, topicName: String?) {
+    private fun updateSelectedTopic(userId: Long, topicName: String?) {
         if (topicName == null) {
             return
         }
 
-        val topic = topicService.getTopicByName(user.id, topicName)
-        if (isNewTopic(topic.id)) {
-            // TODO save topic selection
+        val topicId = topicService.getTopicByName(userId, topicName).id
+        if (isNewTopic(userId, topicId)) {
+            setSelectedTopicId(userId, topicId)
         }
     }
 
     private fun isNewTopic(
+        userId: Long,
         topicId: ObjectId
-    ) = true // TODO
+    ) = getSelectedTopic(userId)?.id != topicId
 
     @CommandHandler(["clearTopicSelection"])
     suspend fun clearTopicSelection(user: User) {
-        // TODO use topic
+        resetSelectedTopicId(user.id)
         search(user.id)
     }
+
+    private fun setSelectedTopicId(userId: Long, topicId: ObjectId) {
+        bot.chatData.set(userId, CONCEPT_SEARCH_TOPIC_PARAM, topicId)
+    }
+
+    private fun resetSelectedTopicId(userId: Long) {
+        bot.chatData.del(userId, CONCEPT_SEARCH_TOPIC_PARAM)
+    }
+
+    private fun getSelectedTopic(userId: Long): Topic? {
+        val topicId = bot.chatData.get<ObjectId>(userId, CONCEPT_SEARCH_TOPIC_PARAM)
+        return topicId?.let { topicService.getTopicById(userId, topicId) }
+    }
+
+    // Search
 
     @CommandHandler(["/concepts", "/concept"])
     suspend fun searchConcept(user: User) {
@@ -107,7 +133,7 @@ class ConceptsSearch(
     }
 
     override fun getEmptySearchResultText(): String {
-        return "Nothing found" // TODO
+        return "Nothing found"
     }
 
     override fun InlineKeyboardMarkupBuilder.resetSearchSubstringButton(userId: Long) {
