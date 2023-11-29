@@ -19,13 +19,18 @@ interface MessageService {
         userId: Long
     )
 
-    suspend fun setLastMessageId(
+    fun setLastMessageId(
         bot: TelegramBot,
         messageId: Long?,
         userId: Long
     )
 
-    suspend fun getLastMessageId(
+    fun resetLastMessageId(
+        bot: TelegramBot,
+        userId: Long
+    )
+
+    fun getLastMessageId(
         bot: TelegramBot,
         userId: Long
     ): Long?
