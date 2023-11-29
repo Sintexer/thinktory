@@ -91,10 +91,10 @@ class ConceptServiceImpl(
         return criteria
     }
 
-    private fun mapToLowercaseSubstringPattern(substring: String) = ".*${substring.lowercase()}.*"
+    private fun mapToLowercaseSubstringPattern(substring: String) = ".*${substring.lowercase()}.*" // TODO regex injection
 
     private fun verifyHigherPageBoundNotViolated(query: ConceptsQuery, conceptsPage: Page<Concept>) {
-        if (query.page >= conceptsPage.totalPages) {
+        if (query.page >= conceptsPage.totalPages && conceptsPage.totalPages != 0) {
             throw IllegalConceptPageException(query.page, "Page number exceeds max page: ${conceptsPage.totalPages}")
         }
     }
