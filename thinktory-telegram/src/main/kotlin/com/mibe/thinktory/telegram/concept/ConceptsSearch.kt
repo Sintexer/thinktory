@@ -102,7 +102,7 @@ class ConceptsSearch(
 
     // Search
 
-    @CommandHandler(["/concepts", "/concept"])
+    @CommandHandler(["/concepts", "/concept", "concepts", "concept"])
     suspend fun searchConcept(user: User) {
         search(user.id)
     }
