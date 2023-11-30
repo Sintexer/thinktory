@@ -20,7 +20,7 @@ class StartController(
     suspend fun mainMenu(user: User, bot: TelegramBot) {
         messageService.sendNewMessage(user) {
             message("👀 Welcome to Thinktory").inlineKeyboardMarkup {
-                "Create concept" callback "newconcept"
+                "Create concept" callback "newConcept"
                 "View concepts" callback "concepts"
             }
         }

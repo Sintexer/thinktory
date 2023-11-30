@@ -35,7 +35,7 @@ class ConceptServiceImpl(
         return conceptRepository.save(newConcept)
     }
 
-    override fun getRecentUserConcept(userId: Long): Concept? {
+    override fun getLastEditedConcept(userId: Long): Concept? {
         return conceptRepository.findTopByUserIdOrderByLastUpdateDesc(userId)
     }
 

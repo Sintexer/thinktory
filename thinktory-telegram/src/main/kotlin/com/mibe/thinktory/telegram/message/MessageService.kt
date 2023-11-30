@@ -9,7 +9,7 @@ import eu.vendeli.tgbot.utils.builders.InlineKeyboardMarkupBuilder
 
 interface MessageService {
 
-    suspend fun sendNewMessage(user: User, messageSupplier: () -> Action<Message>)
+    suspend fun sendNewMessage(user: User, messageSupplier: () -> Action<Message>) // TODO use userId instead of User
     suspend fun sendNewMessage(user: User, messageSupplier: String)
 
     /**
