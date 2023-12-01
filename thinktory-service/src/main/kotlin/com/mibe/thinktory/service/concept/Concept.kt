@@ -11,10 +11,10 @@ import java.time.LocalDateTime
 @Document(collection = "concepts")
 data class Concept(
         @Id val id: ObjectId = ObjectId.get(),
-        val content: String,
+        val title: String,
         val userId: Long,
         @DBRef val topic: Topic? = null,
-        val title: String? = null,
+        val content: String? = null,
         val description: String? = null,
         val questions: List<Question> = emptyList(),
         val label: Set<String> = emptySet(),

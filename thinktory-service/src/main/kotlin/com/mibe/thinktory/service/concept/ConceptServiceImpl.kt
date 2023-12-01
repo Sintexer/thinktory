@@ -26,12 +26,8 @@ class ConceptServiceImpl(
     private val pageSize: Int
 ) : ConceptService {
 
-    override fun createConcept(bookId: ObjectId, concept: Concept): Concept {
-        TODO("Not yet implemented")
-    }
-
-    override fun createConceptFromTheory(userId: Long, theory: String): Concept {
-        val newConcept = Concept(content = theory, userId = userId)
+    override fun createConceptFromTitle(userId: Long, title: String): Concept {
+        val newConcept = Concept(title = title, userId = userId)
         return conceptRepository.save(newConcept)
     }
 
@@ -39,19 +35,22 @@ class ConceptServiceImpl(
         return conceptRepository.findTopByUserIdOrderByLastUpdateDesc(userId)
     }
 
+    override fun updateContent(conceptId: ObjectId, content: String): Concept {
+        return conceptRepository.save(getById(conceptId).copy(content = content))
+    }
+
     override fun updateTitle(conceptId: ObjectId, title: String): Concept {
-        val concept = conceptRepository.findById(conceptId).orElseThrow { ConceptNotFoundException(conceptId) }
-        return conceptRepository.save(concept.copy(title = title))
+        return conceptRepository.save(getById(conceptId).copy(title = title))
     }
 
     override fun updateTopic(conceptId: ObjectId, topicName: String): Concept {
-        val concept = conceptRepository.findById(conceptId).orElseThrow { ConceptNotFoundException(conceptId) }
+        val concept = getById(conceptId)
         val topic = topicService.getOrCreateTopicByName(concept.userId, topicName)
         return conceptRepository.save(concept.copy(topic = topic))
     }
 
     override fun getById(conceptId: ObjectId): Concept {
-        return conceptRepository.findById(conceptId).get()
+        return conceptRepository.findById(conceptId).orElseThrow { ConceptNotFoundException(conceptId) }
     }
 
     private val conceptSortOrder = Sort.by("title").descending()

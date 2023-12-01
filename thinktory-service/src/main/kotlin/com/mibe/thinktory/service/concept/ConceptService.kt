@@ -4,9 +4,9 @@ import org.bson.types.ObjectId
 import org.springframework.data.domain.Page
 
 interface ConceptService {
-    fun createConcept(bookId: ObjectId, concept: Concept): Concept
-    fun createConceptFromTheory(userId: Long, theory: String): Concept
+    fun createConceptFromTitle(userId: Long, title: String): Concept
     fun getLastEditedConcept(userId: Long): Concept?
+    fun updateContent(conceptId: ObjectId, content: String): Concept
     fun updateTitle(conceptId: ObjectId, title: String): Concept
     fun updateTopic(conceptId: ObjectId, topicName: String): Concept
     fun getById(conceptId: ObjectId): Concept

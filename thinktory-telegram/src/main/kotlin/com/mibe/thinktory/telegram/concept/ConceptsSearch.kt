@@ -36,7 +36,7 @@ class ConceptsSearch(
     messageService: MessageService,
     bot: TelegramBot
 ) : PageableBySubstringSearch<Concept, ConceptsQuery>(
-    messageService, bot, { "$CONCEPT_ICON ${it.getPreviewString()}" }, "conceptSearch"
+    messageService, bot, { "$CONCEPT_ICON ${it.title}" }, "conceptSearch"
 ) {
 
     // Topic selection

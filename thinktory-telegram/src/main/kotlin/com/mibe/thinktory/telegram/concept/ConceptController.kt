@@ -3,6 +3,7 @@ package com.mibe.thinktory.telegram.concept
 import com.mibe.thinktory.service.concept.Concept
 import com.mibe.thinktory.service.concept.ConceptService
 import com.mibe.thinktory.telegram.core.CONCEPT_ICON
+import com.mibe.thinktory.telegram.core.CONCEPT_TITLE_ICON
 import com.mibe.thinktory.telegram.core.TOPIC_ICON
 import com.mibe.thinktory.telegram.message.MessageService
 import com.mibe.thinktory.telegram.user.UserDataKeys
@@ -29,21 +30,38 @@ class ConceptController(
     @CommandHandler(["/newconcept", "newConcept"])
     suspend fun newConcept(user: User) {
         messageService.sendNewMessage(user) {
-            message { "$CONCEPT_ICON Send me the theory to build concept" }
+            message { "$CONCEPT_ICON Send me the new concept title" }
         }
         bot.inputListener.set(user.id, "newConceptInput")
     }
 
     @InputHandler(["newConceptInput"])
     suspend fun newConceptInputCatch(update: ProcessedUpdate, user: User) {
-        val concept = conceptService.createConceptFromTheory(user.id, update.text)
+        val concept = conceptService.createConceptFromTitle(user.id, update.text)
         setActiveConcept(user.id, concept.id)
-        messageService.sendNewMessage(user) { message { "Untitled concept created. What to do next?" } }
+        messageService.sendNewMessage(user) { message { "Concept with title only created. What to do next?" } }
         sendConceptWithEditButtons(user, concept.id)
     }
 
     private fun setActiveConcept(userId: Long, conceptId: ObjectId) {
         bot.userData.set(userId, UserDataKeys.ACTIVE_CONCEPT_ID, conceptId)
+    }
+
+    @CommandHandler(["setConceptContent"])
+    suspend fun setContent(user: User) {
+        messageService.sendNewMessage(user, "Send concept body:")
+        bot.inputListener.set(user.id, "conceptContentInput")
+    }
+
+    @InputHandler(["conceptContentInput"])
+    suspend fun contentInputCatch(update: ProcessedUpdate, user: User) {
+        val conceptId = getActiveConceptId(user.id)
+        if (conceptId == null) {
+            sendConceptNotFound(user)
+            return
+        }
+        conceptService.updateContent(conceptId, update.text)
+        sendConceptWithEditButtons(user, conceptId)
     }
 
     @CommandHandler(["setConceptTitle"])
@@ -132,7 +150,8 @@ class ConceptController(
     }
 
     private fun InlineKeyboardMarkupBuilder.conceptEditKeyboard() {
-        "👀 Set title" callback "setConceptTitle"
+        "$CONCEPT_ICON Update title" callback "setConceptTitle"
+        "$CONCEPT_TITLE_ICON Update content" callback "setConceptContent"
         "$TOPIC_ICON Set topic" callback "addTopicToConcept"
         "Add questions" callback "addQuestionToConcept"
         br()
