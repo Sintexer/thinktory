@@ -20,6 +20,13 @@ import org.springframework.stereotype.Component
 
 private const val CANNOT_FIND_ACTIVE_CONCEPT_MESSAGE = "Can't find active concept. Try choosing concept via search"
 
+private const val QUESTION_EDIT_DESCRIPTION =
+    "Edit concept questions. Questions are plain strings, that should ask about concept. An answer to " +
+            "a question should always be concept+\n\n" +
+            "- Editing questions means you're editing whole block of questions.\n" +
+            "- Start your message with a plus (+) " +
+            "to just append new question, without replacing current questions block"
+
 @Component
 class ConceptController(
     private val conceptService: ConceptService,
@@ -84,10 +91,10 @@ class ConceptController(
     @CommandHandler(["addTopicToConcept"])
     suspend fun addTopic(user: User) {
         message { "Send topic name" }.send(user, bot)
-        bot.inputListener.set(user.id, "topicInput")
+        bot.inputListener.set(user.id, "conceptTopicInput")
     }
 
-    @InputHandler(["topicInput"])
+    @InputHandler(["conceptTopicInput"])
     suspend fun topicInputCatch(update: ProcessedUpdate, user: User) {
         val conceptId = getActiveConceptId(user.id)
         if (conceptId == null) {
@@ -96,6 +103,36 @@ class ConceptController(
         }
         conceptService.updateTopic(conceptId, update.text)
         messageService.sendNewMessage(user, "Topic updated")
+        sendConceptWithEditButtons(user, conceptId)
+    }
+
+    @CommandHandler(["editConceptQuestions"])
+    suspend fun editConceptQuestions(user: User) {
+        val concept = getActiveConcept(user.id)
+        if (concept == null) {
+            messageService.sendNewMessage(user, CANNOT_FIND_ACTIVE_CONCEPT_MESSAGE)
+            return
+        }
+        messageService.sendNewMessage(user) {
+            if (concept.questions.isEmpty()) {
+                message { QUESTION_EDIT_DESCRIPTION }
+            } else {
+                message { QUESTION_EDIT_DESCRIPTION + code { concept.getQuestionsBlock() } }
+            }
+        }
+
+        bot.inputListener.set(user.id, "conceptQuestionsInput")
+    }
+
+    @InputHandler(["conceptQuestionsInput"])
+    suspend fun questionsInputCatch(update: ProcessedUpdate, user: User) {
+        val conceptId = getActiveConceptId(user.id)
+        if (conceptId == null) {
+            messageService.sendNewMessage(user, CANNOT_FIND_ACTIVE_CONCEPT_MESSAGE)
+            return
+        }
+
+        messageService.sendNewMessage(user, "Questions updated")
         sendConceptWithEditButtons(user, conceptId)
     }
 
@@ -153,8 +190,8 @@ class ConceptController(
         "$CONCEPT_ICON Update title" callback "setConceptTitle"
         "$CONCEPT_TITLE_ICON Update content" callback "setConceptContent"
         "$TOPIC_ICON Set topic" callback "addTopicToConcept"
-        "Add questions" callback "addQuestionToConcept"
         br()
+        "Edit questions" callback "editConceptQuestions"
         navigationButtons()
     }
 

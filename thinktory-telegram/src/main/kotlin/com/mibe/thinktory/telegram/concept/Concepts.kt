@@ -8,7 +8,8 @@ fun getMarkdownRender(concept: Concept) : EntitiesContextBuilder.() -> String = 
     "" - line(title(concept)) -
             line(topic(concept)) -
             "\n" -
-            theory(concept)
+            theory(concept) -
+            if (concept.questions.isNotEmpty()) { "\n" - concept.getQuestionsBlock() } else { "" }
 }
 
 private fun EntitiesContextBuilder.title(concept: Concept) = bold { concept.title }
@@ -23,4 +24,8 @@ private fun line(text: Pair<EntityType, String>) = if (text.second.isBlank()) {
     text
 } else {
     Pair(text.first, text.second + "\n")
+}
+
+fun Concept.getQuestionsBlock(): String {
+    return this.questions.joinToString("\n") { "- $it" }
 }
