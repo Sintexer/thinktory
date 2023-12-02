@@ -1,5 +1,6 @@
 package com.mibe.thinktory.service.concept
 
+import com.mibe.thinktory.service.question.Question
 import com.mibe.thinktory.service.topic.Topic
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
