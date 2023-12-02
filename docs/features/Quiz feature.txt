@@ -1,0 +1,42 @@
+title Quiz feature
+
+User->Bot:send `/quiz`
+Bot->QuizController:prepareQuiz()
+QuizController->User:quiz configuration **menu**
+User->Bot:clicks configuration **buttons**
+Bot->QuizController:saveQuizParameters()
+QuizController->User:quiz configuration **menu**
+User->Bot:click `Start quiz` **button**
+Bot->QuizController:startQuiz()
+QuizController->QuizService:startQuiz(QuizParameters)
+QuizService->QuizService:buildQuizProgram(QuizParameters)
+QuizService->QuizController:Quiz
+QuizController->Bot:saveActiveQuiz(Quiz)
+Bot->QuizController:
+QuizController->User:first question and `Show answer` button
+User->User:thinks
+User->Bot:`Show answer` clicked
+Bot->QuizController:showAnswer()
+QuizController->User:Answer and menu (`Got it` and `Failed` and `Cancel`)
+User->Bot:clicks `Got it`
+Bot->QuizController:nextQuestion()
+QuizController->User:second question and `Show answer` button
+User->Bot:`Show answer` clicked
+Bot->QuizController:showAnswer()
+QuizController->User:Answer and menu (`Got it` and `Failed` and `Cancel`)
+User->Bot:clicks `Failed`
+Bot->QuizController:questionFailed()
+QuizController->QuizService:updateQuizAfterFailure(Quiz, Question)
+QuizService->QuizController:Quiz
+QuizController->Bot:saveActiveQuiz(Quiz)
+Bot->QuizController:
+QuizController->User:third question and `Show answer` button
+
+==On quiz end==
+
+QuizController->User:second question and `Show answer` button (user failed this question previously)
+Bot->QuizController:showAnswer()
+QuizController->User:Answer and menu (`Got it` and `Failed` and `Cancel`)
+User->Bot:clicks `Got it`
+Bot->QuizController:nextQuestion()
+QuizController->User:Quiz finished message and statistics
