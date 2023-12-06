@@ -49,12 +49,8 @@ class QuestionProcessorImpl : QuestionProcessor {
         this.isNotContaining("\n$unexpectedMarker") otherwise { "All questions must have same markers $ALL_MARKERS_HINT" }
     }
 
-    private fun parseQuestions(
-        questionsBlock: String,
-        delimiter: String
-    ): QuestionsParseResult {
+    private fun parseQuestions(questionsBlock: String, delimiter: String): QuestionsParseResult {
         val questions = questionsBlock.split("\n$delimiter")
-            .map(String::trim)
             .map { parseQuestion(it) }
 
         return when (delimiter) {
@@ -86,7 +82,7 @@ class QuestionProcessorImpl : QuestionProcessor {
         } else {
             question
         }
-        return Question(content)
+        return Question(content.trim())
     }
 
     val validateQuestion = Validator<String> {
