@@ -48,8 +48,9 @@ abstract class PageableSearch<T, Q, C : PageableSearchContext>(
     protected open fun InlineKeyboardMarkupBuilder.emptyResultMenu(userId: Long) = backButton(userId)
 
     protected open suspend fun sendPage(userId: Long, page: Page<T>) {
-        messageService.sendMarkupUpdateViaLastMessage(getResultMessage(page), {
+        messageService.sendMarkupUpdateViaLastMessage(getResultMessagePrefix(userId) + getResultMessageText(page), {
             selectButtons(userId, page)
+            selectNone(userId)
             if (page.totalPages > 1) {
                 paginationButtons(page)
             }
@@ -58,11 +59,13 @@ abstract class PageableSearch<T, Q, C : PageableSearchContext>(
         }, userId)
     }
 
+
     protected open fun InlineKeyboardMarkupBuilder.customControls(userId: Long, page: Page<T>) {
     }
 
     protected open fun InlineKeyboardMarkupBuilder.selectNone(userId: Long) {
-        "$NOTHING_ICON Select None" callback getResultLink(userId)
+        "Select None" callback getResultLink(userId)
+        br()
     }
 
     protected open fun InlineKeyboardMarkupBuilder.selectButtons(userId: Long, page: Page<T>) {
@@ -124,6 +127,7 @@ abstract class PageableSearch<T, Q, C : PageableSearchContext>(
     protected abstract fun getPage(userId: Long, query: Q): Page<T>
     protected abstract fun getEmptySearchResultText(): String
     protected abstract fun getPageUrl(page: Int): String
-    protected abstract fun getResultMessage(page: Page<T>): String
+    protected abstract fun getResultMessageText(page: Page<T>): String
+    protected open fun getResultMessagePrefix(userId: Long): String = ""
 
 }

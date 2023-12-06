@@ -7,6 +7,7 @@ import com.mibe.thinktory.service.topic.Topic
 import com.mibe.thinktory.service.topic.TopicService
 import com.mibe.thinktory.telegram.chat.ChatDataService
 import com.mibe.thinktory.telegram.core.CONCEPT_ICON
+import com.mibe.thinktory.telegram.core.SEARCH_ICON
 import com.mibe.thinktory.telegram.core.TOPIC_ICON
 import com.mibe.thinktory.telegram.core.context.PagedSubstringSearchContext
 import com.mibe.thinktory.telegram.core.search.PageableBySubstringSearch
@@ -43,8 +44,6 @@ class ConceptsSearch(
 
     override fun InlineKeyboardMarkupBuilder.customControls(userId: Long, page: Page<Concept>) {
         getTopicButtonText(userId) callback "conceptSearchSelectTopic"
-        "Clear topic selection" callback "clearTopicSelection"
-        br()
     }
 
     private fun getTopicButtonText(userId: Long): String {
@@ -129,7 +128,7 @@ class ConceptsSearch(
         searchFromPage(user.id, page)
     }
 
-    override fun getResultMessage(page: Page<Concept>): String {
+    override fun getResultMessageText(page: Page<Concept>): String {
         return CONCEPTS_SEARCH_RESULT_MESSAGE_TEXT
     }
 
@@ -138,7 +137,7 @@ class ConceptsSearch(
     }
 
     override fun InlineKeyboardMarkupBuilder.resetSearchSubstringButton(userId: Long) {
-        "Reset search substring" callback "resetConceptSearch"
+        "$SEARCH_ICON Reset query" callback "resetConceptSearch"
     }
 
     @CommandHandler(["resetConceptSearch"])

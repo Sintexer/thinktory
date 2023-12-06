@@ -289,16 +289,16 @@ class ConceptController(
     }
 
     private fun InlineKeyboardMarkupBuilder.conceptEditKeyboard() {
-        "$CONCEPT_ICON Update title" callback "setConceptTitle"
-        "$CONCEPT_TITLE_ICON Update content" callback "setConceptContent"
+        "$CONCEPT_ICON Set title" callback "setConceptTitle"
+        "$CONCEPT_TITLE_ICON Set content" callback "setConceptContent"
         "$TOPIC_ICON Set topic" callback "addTopicToConcept"
         br()
-        "$QUESTION_ICON Edit questions" callback "editConceptQuestions"
+        "$QUESTION_ICON Set questions" callback "editConceptQuestions"
         navigationButtons()
     }
 
     private fun InlineKeyboardMarkupBuilder.navigationButtons() {
-        "Create another concept" callback "newConcept"
+        "Create another" callback "newConcept"
         "Go to main menu" callback "mainMenu"
     }
 }

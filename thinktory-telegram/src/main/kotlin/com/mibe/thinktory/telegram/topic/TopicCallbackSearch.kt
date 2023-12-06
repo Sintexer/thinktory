@@ -4,6 +4,7 @@ import com.mibe.thinktory.service.topic.Topic
 import com.mibe.thinktory.service.topic.TopicSearchQuery
 import com.mibe.thinktory.service.topic.TopicService
 import com.mibe.thinktory.telegram.chat.ChatDataService
+import com.mibe.thinktory.telegram.core.SEARCH_ICON
 import com.mibe.thinktory.telegram.core.context.PagedSubstringSearchContext
 import com.mibe.thinktory.telegram.core.search.CallbackPageableBySubstringSearch
 import com.mibe.thinktory.telegram.message.MessageService
@@ -36,7 +37,7 @@ class TopicCallbackSearch(
     }
 
     override fun InlineKeyboardMarkupBuilder.resetSearchSubstringButton(userId: Long) {
-        "Reset search substring" callback "resetTopicSearch"
+        "$SEARCH_ICON Reset query" callback "resetTopicSearch"
     }
 
     @CommandHandler(["resetTopicSearch"])
@@ -70,7 +71,7 @@ class TopicCallbackSearch(
         searchFromPage(user.id, page)
     }
 
-    override fun getResultMessage(page: Page<Topic>): String = TOPIC_SEARCH_RESULT_MESSAGE_TEXT
+    override fun getResultMessageText(page: Page<Topic>): String = TOPIC_SEARCH_RESULT_MESSAGE_TEXT
 
     override fun toQuery(context: PagedSubstringSearchContext?): TopicSearchQuery {
         return context?.let { TopicSearchQuery(it.page, it.searchSubstring) } ?: TopicSearchQuery()

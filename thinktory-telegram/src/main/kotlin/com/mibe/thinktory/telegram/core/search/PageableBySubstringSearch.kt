@@ -1,5 +1,6 @@
 package com.mibe.thinktory.telegram.core.search
 
+import com.mibe.thinktory.telegram.core.SEARCH_ICON
 import com.mibe.thinktory.telegram.core.context.PagedSubstringSearchContext
 import com.mibe.thinktory.telegram.message.MessageService
 import eu.vendeli.tgbot.TelegramBot
@@ -55,4 +56,12 @@ abstract class PageableBySubstringSearch<T, Q>(
 
     protected abstract fun setSearchSubstringInputListener(userId: Long)
 
+    override fun getResultMessagePrefix(userId: Long): String {
+        val context = getContext(userId)
+        return if (context.searchSubstring.isNotBlank()) {
+            "$SEARCH_ICON Results by substring: ${context.searchSubstring}\n"
+        } else {
+            ""
+        }
+    }
 }
