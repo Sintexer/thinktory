@@ -67,6 +67,7 @@ class ConceptsSearch(
 
     private fun updateSelectedTopic(userId: Long, topicName: String?) {
         if (topicName == null) {
+            resetSelectedTopicId(userId)
             return
         }
 

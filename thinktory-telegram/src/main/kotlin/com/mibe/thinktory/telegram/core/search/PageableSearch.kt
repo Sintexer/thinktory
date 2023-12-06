@@ -1,5 +1,6 @@
 package com.mibe.thinktory.telegram.core.search
 
+import com.mibe.thinktory.telegram.core.NOTHING_ICON
 import com.mibe.thinktory.telegram.core.context.PageableSearchContext
 import com.mibe.thinktory.telegram.message.MessageService
 import eu.vendeli.tgbot.TelegramBot
@@ -49,13 +50,19 @@ abstract class PageableSearch<T, Q, C : PageableSearchContext>(
     protected open suspend fun sendPage(userId: Long, page: Page<T>) {
         messageService.sendMarkupUpdateViaLastMessage(getResultMessage(page), {
             selectButtons(userId, page)
-            paginationButtons(page)
+            if (page.totalPages > 1) {
+                paginationButtons(page)
+            }
             customControls(userId, page)
             searchControlButtons(userId)
         }, userId)
     }
 
     protected open fun InlineKeyboardMarkupBuilder.customControls(userId: Long, page: Page<T>) {
+    }
+
+    protected open fun InlineKeyboardMarkupBuilder.selectNone(userId: Long) {
+        "$NOTHING_ICON Select None" callback getResultLink(userId)
     }
 
     protected open fun InlineKeyboardMarkupBuilder.selectButtons(userId: Long, page: Page<T>) {
