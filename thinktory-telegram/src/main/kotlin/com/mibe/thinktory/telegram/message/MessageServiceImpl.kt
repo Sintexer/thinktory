@@ -24,6 +24,15 @@ class MessageServiceImpl(
         resetLastMessageId(bot, userId)
     }
 
+    override suspend fun sendNewMessage(userId: Long, messageSupplier: String) {
+        sendNewMessage(userId) { message {messageSupplier} }
+    }
+
+    override suspend fun sendNewMessage(userId: Long, messageSupplier: () -> Action<Message>) {
+        val message = messageSupplier.invoke().sendAsync(userId, bot).await().getOrNull()
+        setLastMessageId(bot, message?.messageId, userId)
+    }
+
     override suspend fun sendNewMessage(user: User, messageSupplier: () -> Action<Message>) {
         val message = messageSupplier.invoke().sendAsync(user, bot).await().getOrNull()
         setLastMessageId(bot, message?.messageId, user.id)

@@ -2,6 +2,7 @@ package com.mibe.thinktory.service.concept
 
 import com.mibe.thinktory.service.concept.exception.ConceptNotFoundException
 import com.mibe.thinktory.service.concept.exception.IllegalConceptPageException
+import com.mibe.thinktory.service.question.Question
 import com.mibe.thinktory.service.topic.TopicService
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Value
@@ -47,6 +48,10 @@ class ConceptServiceImpl(
         val concept = getById(conceptId)
         val topic = topicService.getOrCreateTopicByName(concept.userId, topicName)
         return conceptRepository.save(concept.copy(topic = topic))
+    }
+
+    override fun updateQuestions(conceptId: ObjectId, questions: List<Question>): Concept {
+        return conceptRepository.save(getById(conceptId).copy(questions = questions))
     }
 
     override fun getById(conceptId: ObjectId): Concept {

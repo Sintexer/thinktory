@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.spring")
+    id("com.google.devtools.ksp") version "1.9.10-1.0.13"
 }
 
 group = "com.mibe.thinktory"
@@ -13,6 +14,15 @@ dependencies {
     implementation("org.reflections:reflections:0.10.2")
 
     implementation("org.springframework.boot:spring-boot-starter")
+
+    implementation("dev.nesk.akkurate:akkurate-core:0.5.0")
+    implementation("dev.nesk.akkurate:akkurate-ksp-plugin:0.5.0")
+    ksp("dev.nesk.akkurate:akkurate-ksp-plugin:0.5.0")
+
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    val kotestVersion = "5.8.0"
+    testImplementation("io.kotest:kotest-runner-junit5-jvm:$kotestVersion")
+    testImplementation("io.kotest:kotest-framework-datatest:$kotestVersion")
+    testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
 }
