@@ -5,6 +5,7 @@ import com.mibe.thinktory.service.concept.ConceptService
 import com.mibe.thinktory.service.question.Question
 import com.mibe.thinktory.telegram.core.CONCEPT_ICON
 import com.mibe.thinktory.telegram.core.CONCEPT_TITLE_ICON
+import com.mibe.thinktory.telegram.core.QUESTION_ICON
 import com.mibe.thinktory.telegram.core.REMOVE_ICON
 import com.mibe.thinktory.telegram.core.TOPIC_ICON
 import com.mibe.thinktory.telegram.core.WARNING_ICON
@@ -292,7 +293,7 @@ class ConceptController(
         "$CONCEPT_TITLE_ICON Update content" callback "setConceptContent"
         "$TOPIC_ICON Set topic" callback "addTopicToConcept"
         br()
-        "Edit questions" callback "editConceptQuestions"
+        "$QUESTION_ICON Edit questions" callback "editConceptQuestions"
         navigationButtons()
     }
 
