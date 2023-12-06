@@ -9,12 +9,12 @@ import dev.nesk.akkurate.constraints.builders.isNotBlank
 import dev.nesk.akkurate.constraints.builders.isNotContaining
 import dev.nesk.akkurate.constraints.otherwise
 
-private const val APPEND_MARKER = "+"
-private const val QUESTION_ITEM_MARKER = "-"
-private const val ALL_MARKERS_HINT = "('+', '-')"
-private const val MAX_QUESTIONS_BLOCK_LENGTH = 2000
-private const val MAX_QUESTION_LENGTH = 100
-private const val MIN_QUESTION_LENGTH = 1
+const val APPEND_MARKER = "+"
+const val QUESTION_ITEM_MARKER = "-"
+const val ALL_MARKERS_HINT = "('+', '-')"
+const val MAX_QUESTIONS_BLOCK_LENGTH = 2000
+const val MAX_QUESTION_LENGTH = 100
+const val MIN_QUESTION_LENGTH = 1
 
 class QuestionProcessorImpl : QuestionProcessor {
 
@@ -60,12 +60,9 @@ class QuestionProcessorImpl : QuestionProcessor {
             hasLengthLowerThanOrEqualTo(MAX_QUESTIONS_BLOCK_LENGTH) otherwise {
                 "Questions block exceeds maximum length of $MAX_QUESTIONS_BLOCK_LENGTH"
             }
-            hasLengthGreaterThanOrEqualTo(MIN_QUESTION_LENGTH) otherwise {
-                "Questions block should be at leas $MIN_QUESTION_LENGTH characters long"
-            }
             if (this.unwrap().startsWithQuestionMarker()) {
                 this.hasLengthGreaterThan(MIN_QUESTION_LENGTH) otherwise {
-                    "Questions block should contain something except question markers ($APPEND_MARKER, $QUESTION_ITEM_MARKER)"
+                    "Questions block should contain something except question markers $ALL_MARKERS_HINT"
                 }
             }
         }
@@ -81,10 +78,6 @@ class QuestionProcessorImpl : QuestionProcessor {
         return Question(content)
     }
 
-    override fun validate(question: String) {
-        validateQuestion(question).orThrow()
-    }
-
     val validateQuestion = Validator<String> {
         this {
             isNotBlank() otherwise {
@@ -94,7 +87,7 @@ class QuestionProcessorImpl : QuestionProcessor {
                 "Question exceeds maximum length of $MAX_QUESTION_LENGTH"
             }
             hasLengthGreaterThanOrEqualTo(MIN_QUESTION_LENGTH) otherwise {
-                "Question should be at leas $MIN_QUESTION_LENGTH characters long"
+                "Question should be at least $MIN_QUESTION_LENGTH characters long"
             }
         }
         if (this.unwrap().startsWithQuestionMarker()) {

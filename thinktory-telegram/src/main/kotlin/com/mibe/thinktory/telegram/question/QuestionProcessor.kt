@@ -6,6 +6,5 @@ interface QuestionProcessor {
 
     fun parseQuestions(questionsBlock: String): QuestionsParseResult
     fun parseQuestion(question: String): Question
-    fun validate(question: String)
 
 }

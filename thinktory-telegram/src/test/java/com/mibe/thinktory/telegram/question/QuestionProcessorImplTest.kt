@@ -9,11 +9,34 @@ import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 
 class QuestionProcessorImplTest : FeatureSpec({
-    val questionProcessor: QuestionProcessorImpl = QuestionProcessorImpl()
+    val questionProcessor = QuestionProcessorImpl()
     val multiline = "question ? \n   multi line"
     val singleLine = "question Single Line"
 
     feature("parseQuestions") {
+
+        withData(nameFn = { "blankName"}, "", "    ", "             ") { blankBlock ->
+            val exception = shouldThrow<ValidationResult.Exception> { questionProcessor.parseQuestions(blankBlock) }
+            exception.shouldHaveViolation("Questions block cannot be blank")
+        }
+
+        scenario("block consists of `+` only") {
+            val exception = shouldThrow<ValidationResult.Exception> { questionProcessor.parseQuestions("+") }
+            exception.shouldHaveViolation("Questions block should contain something except question markers ('+', '-')")
+        }
+
+        scenario("block consists of `-` only") {
+            val exception = shouldThrow<ValidationResult.Exception> { questionProcessor.parseQuestions("+") }
+            exception.shouldHaveViolation("Questions block should contain something except question markers ('+', '-')")
+        }
+
+        scenario("block exceeds max length") {
+            val block = "s".repeat(MAX_QUESTIONS_BLOCK_LENGTH + 1)
+            val exception = shouldThrow<ValidationResult.Exception> { questionProcessor.parseQuestions(block) }
+            exception.shouldHaveViolation("Questions block exceeds maximum length of $MAX_QUESTIONS_BLOCK_LENGTH")
+        }
+
+
         withData(
             Pair("-question1\n-question2\n-question3", questions("question1", "question2", "question3")),
             Pair("question", questions("question")),
@@ -22,15 +45,18 @@ class QuestionProcessorImplTest : FeatureSpec({
             parsedQuestions.action shouldBe QuestionsAction.REPLACE
             parsedQuestions.questions shouldBe it.second
         }
+
         scenario("multiline question near single line question") {
             val questionsBlock = "-$multiline\n-$singleLine"
             questionProcessor.parseQuestions(questionsBlock).questions shouldBe questions(multiline, singleLine)
         }
+
         scenario("mixed `+` and `-` syntax should fail") {
             val questionsBlock = "-$multiline\n+$singleLine"
             val exception = shouldThrow<ValidationResult.Exception> { questionProcessor.parseQuestions(questionsBlock) }
             exception.shouldHaveViolation("All questions must have same markers ('+', '-')")
         }
+
         scenario("several '+' as append action") {
             val questionsBlock = "+$multiline\n+$singleLine"
             val parsedQuestions = questionProcessor.parseQuestions(questionsBlock)
@@ -38,6 +64,7 @@ class QuestionProcessorImplTest : FeatureSpec({
             parsedQuestions.questions shouldBe questions(multiline, singleLine)
 
         }
+
         scenario("several '-' as append action") {
             val questionsBlock = "-$multiline\n-$singleLine"
             val parsedQuestions = questionProcessor.parseQuestions(questionsBlock)
@@ -45,6 +72,7 @@ class QuestionProcessorImplTest : FeatureSpec({
             parsedQuestions.questions shouldBe questions(multiline, singleLine)
 
         }
+
         scenario("No marker on first pos") {
             val questionsBlock = "first\n-second\n+third" // will be resolved as one question
             val parsedQuestions = questionProcessor.parseQuestions(questionsBlock)
@@ -54,6 +82,7 @@ class QuestionProcessorImplTest : FeatureSpec({
     }
 
     feature("parseQuestion") {
+
         withData(
             "-$singleLine" to singleLine,
             "+$singleLine" to singleLine,
@@ -73,27 +102,33 @@ class QuestionProcessorImplTest : FeatureSpec({
     }
 
     feature("validateQuestion") {
+
         scenario("question that consists of a `-` only") {
             val result = questionProcessor.validateQuestion("-")
             result.shouldHaveViolation("Question should contain something except question markers ('+', '-')")
         }
+
         scenario("question that consists of a `+` only") {
             val result = questionProcessor.validateQuestion("+")
             result.shouldHaveViolation("Question should contain something except question markers ('+', '-')")
         }
+
         scenario("too long question") {
             val questionToLong = "a".repeat(105)
             val result = questionProcessor.validateQuestion(questionToLong)
             result.shouldHaveViolation("Question exceeds maximum length of 100")
         }
+
         scenario("blank question") {
             val result = questionProcessor.validateQuestion("")
             result.shouldHaveViolation("Question cannot be blank")
         }
+
         scenario("valid one line question") {
             val result = questionProcessor.validateQuestion(singleLine)
             shouldBeSuccess(result)
         }
+
         scenario("valid multiline question") {
             val result = questionProcessor.validateQuestion(multiline)
             shouldBeSuccess(result)
