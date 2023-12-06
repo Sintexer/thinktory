@@ -127,7 +127,7 @@ abstract class PageableSearch<T, Q, C : PageableSearchContext>(
     protected abstract fun getPage(userId: Long, query: Q): Page<T>
     protected abstract fun getEmptySearchResultText(): String
     protected abstract fun getPageUrl(page: Int): String
-    protected abstract fun getResultMessageText(page: Page<T>): String
+    protected open fun getResultMessageText(page: Page<T>): String = "Send query substring to narrow the search results:"
     protected open fun getResultMessagePrefix(userId: Long): String = ""
 
 }

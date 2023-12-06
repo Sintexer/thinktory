@@ -59,7 +59,7 @@ abstract class PageableBySubstringSearch<T, Q>(
     override fun getResultMessagePrefix(userId: Long): String {
         val context = getContext(userId)
         return if (context.searchSubstring.isNotBlank()) {
-            "$SEARCH_ICON Results by substring: ${context.searchSubstring}\n"
+            "$SEARCH_ICON Results by substring: \"${context.searchSubstring}\"\n"
         } else {
             ""
         }

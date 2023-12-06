@@ -41,7 +41,7 @@ class TopicServiceImpl(
 
     override fun getPage(userId: Long, topicSearchQuery: TopicSearchQuery): Page<Topic> {
         val (page, topicSubstring) = topicSearchQuery
-        return topicRepository.findByNameRegex(".*$topicSubstring.*", getTopicsPageRequest(page))
+        return topicRepository.findByNameRegex(".*$topicSubstring.*", getTopicsPageRequest(page)) //TODO better regex search (case-insensitive)
     }
 
     private fun getTopicsPageRequest(page: Int) = PageRequest.of(page, 5, Sort.by("name").ascending())

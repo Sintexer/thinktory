@@ -5,6 +5,7 @@ import com.mibe.thinktory.service.topic.Topic
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.mongodb.core.index.TextIndexed
 import org.springframework.data.mongodb.core.mapping.DBRef
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
@@ -15,9 +16,9 @@ data class Concept(
         val title: String,
         val userId: Long,
         @DBRef val topic: Topic? = null,
-        val content: String? = null,
+        @TextIndexed val content: String? = null,
         val description: String? = null,
         val questions: List<Question> = emptyList(),
-        val label: Set<String> = emptySet(),
+        val labels: Set<String> = emptySet(),
         @LastModifiedDate val lastUpdate: LocalDateTime? = null
 )

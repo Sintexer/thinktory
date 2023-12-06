@@ -19,7 +19,7 @@ import org.springframework.data.domain.Page
 import org.springframework.stereotype.Component
 
 private const val TOPIC_SEARCH_RESULT_MESSAGE_TEXT =
-    "Choose one of these or enter title substring to narrow the search results:"
+    "Send query substring to narrow the search results:"
 
 @Component
 class TopicCallbackSearch(

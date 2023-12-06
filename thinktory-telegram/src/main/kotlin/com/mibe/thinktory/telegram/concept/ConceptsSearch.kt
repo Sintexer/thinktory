@@ -25,7 +25,7 @@ import org.springframework.data.domain.Page
 import org.springframework.stereotype.Component
 
 private const val CONCEPTS_SEARCH_RESULT_MESSAGE_TEXT =
-    "👀 Choose one of these or send substring to narrow the search results:"
+    "Choose one of these or send substring to narrow the search results:"
 private const val CONCEPT_SEARCH_TOPIC_PARAM = "conceptSearchTopicParam"
 
 @Component
