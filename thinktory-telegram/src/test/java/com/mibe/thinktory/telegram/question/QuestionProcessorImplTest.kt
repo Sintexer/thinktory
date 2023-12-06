@@ -22,12 +22,12 @@ class QuestionProcessorImplTest : FeatureSpec({
 
         scenario("block consists of `+` only") {
             val exception = shouldThrow<ValidationResult.Exception> { questionProcessor.parseQuestions("+") }
-            exception.shouldHaveViolation("Questions block should contain something except question markers ('+', '-')")
+            exception.shouldHaveViolation("Questions block should contain something except question markers (+ or -)")
         }
 
         scenario("block consists of `-` only") {
             val exception = shouldThrow<ValidationResult.Exception> { questionProcessor.parseQuestions("+") }
-            exception.shouldHaveViolation("Questions block should contain something except question markers ('+', '-')")
+            exception.shouldHaveViolation("Questions block should contain something except question markers (+ or -)")
         }
 
         scenario("block exceeds max length") {
@@ -54,7 +54,7 @@ class QuestionProcessorImplTest : FeatureSpec({
         scenario("mixed `+` and `-` syntax should fail") {
             val questionsBlock = "-$multiline\n+$singleLine"
             val exception = shouldThrow<ValidationResult.Exception> { questionProcessor.parseQuestions(questionsBlock) }
-            exception.shouldHaveViolation("All questions must have same markers ('+', '-')")
+            exception.shouldHaveViolation("All questions must have same markers (+ or -)")
         }
 
         scenario("several '+' as append action") {
@@ -105,12 +105,12 @@ class QuestionProcessorImplTest : FeatureSpec({
 
         scenario("question that consists of a `-` only") {
             val result = questionProcessor.validateQuestion("-")
-            result.shouldHaveViolation("Question should contain something except question markers ('+', '-')")
+            result.shouldHaveViolation("Question should contain something except question markers (+ or -)")
         }
 
         scenario("question that consists of a `+` only") {
             val result = questionProcessor.validateQuestion("+")
-            result.shouldHaveViolation("Question should contain something except question markers ('+', '-')")
+            result.shouldHaveViolation("Question should contain something except question markers (+ or -)")
         }
 
         scenario("too long question") {

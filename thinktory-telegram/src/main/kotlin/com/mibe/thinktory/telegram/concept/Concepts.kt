@@ -27,5 +27,5 @@ private fun line(text: Pair<EntityType, String>) = if (text.second.isBlank()) {
 }
 
 fun Concept.getQuestionsBlock(): String {
-    return this.questions.joinToString("\n") { "- $it" }
+    return this.questions.joinToString("\n") { "- ${it.content}" }
 }

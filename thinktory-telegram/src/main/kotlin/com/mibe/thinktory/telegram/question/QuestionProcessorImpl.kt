@@ -8,15 +8,25 @@ import dev.nesk.akkurate.constraints.builders.hasLengthLowerThanOrEqualTo
 import dev.nesk.akkurate.constraints.builders.isNotBlank
 import dev.nesk.akkurate.constraints.builders.isNotContaining
 import dev.nesk.akkurate.constraints.otherwise
+import org.springframework.stereotype.Service
 
 const val APPEND_MARKER = "+"
 const val QUESTION_ITEM_MARKER = "-"
-const val ALL_MARKERS_HINT = "('+', '-')"
+const val ALL_MARKERS_HINT = "(+ or -)"
 const val MAX_QUESTIONS_BLOCK_LENGTH = 2000
 const val MAX_QUESTION_LENGTH = 100
 const val MIN_QUESTION_LENGTH = 1
 
+@Service
 class QuestionProcessorImpl : QuestionProcessor {
+
+    override fun updateQuestions(questions: List<Question>, questionsBlock: String): List<Question> {
+        val parsedQuestions = parseQuestions(questionsBlock)
+        return when (parsedQuestions.action) {
+            QuestionsAction.REPLACE -> parsedQuestions.questions
+            QuestionsAction.APPEND -> questions + parsedQuestions.questions
+        }
+    }
 
     override fun parseQuestions(questionsBlock: String): QuestionsParseResult {
         validateQuestionsBlock(questionsBlock).orThrow()
@@ -44,6 +54,7 @@ class QuestionProcessorImpl : QuestionProcessor {
         delimiter: String
     ): QuestionsParseResult {
         val questions = questionsBlock.split("\n$delimiter")
+            .map(String::trim)
             .map { parseQuestion(it) }
 
         return when (delimiter) {
@@ -95,6 +106,10 @@ class QuestionProcessorImpl : QuestionProcessor {
                 "Question should contain something except question markers $ALL_MARKERS_HINT"
             }
         }
+    }
+
+    override fun getQuestionsDiff(questionsBefore: List<Question>, questionsAfter: List<Question>): List<Question> {
+        return questionsBefore.filter { !questionsAfter.contains(it) }
     }
 
     private fun String.startsWithQuestionMarker() =
