@@ -36,7 +36,8 @@ private const val QUESTION_EDIT_DESCRIPTION =
             "- Editing questions means you're editing whole block of questions.\n" +
             "- Start your message with a plus (+) " +
             "to just append new question, without replacing current questions block.\n" +
-            "You can send several questions on separate lines. Each question should start with a marker $ALL_MARKERS_HINT"
+            "- You can send several questions on separate lines. Each question should " +
+            "start with a marker $ - otherwise it is interpreted as multiline question."
 
 @Component
 class ConceptController(
@@ -122,17 +123,27 @@ class ConceptController(
     suspend fun editConceptQuestions(user: User) {
         val concept = getActiveConceptOrNull(user.id)
         if (concept == null) {
-            messageService.sendNewMessage(user, CANNOT_FIND_ACTIVE_CONCEPT_MESSAGE)
+            sendContextDataExpired(user)
             return
         }
 
         resetCurrentQuestionsUpdate(user.id)
-        messageService.sendNewMessage(user, QUESTION_EDIT_DESCRIPTION)
-        if (concept.questions.isNotEmpty()) {
-            messageService.sendNewMessage(user) { message { "" + code { concept.getQuestionsBlock() } } }
-        }
 
         bot.inputListener.set(user.id, "conceptQuestionsInput")
+        messageService.sendNewMessage(user) {
+            message(concept.getQuestionsBlock()).inlineKeyboardMarkup { questionsEditMenu() }
+        }
+    }
+
+    private fun InlineKeyboardMarkupBuilder.questionsEditMenu() {
+        "Show questions edit hints" callback "showConceptQuestionsEditHint"
+        "Go back" callback "lastConcept"
+    }
+
+    @CommandHandler(["showConceptQuestionsEditHint"])
+    suspend fun showConceptQuestionsEditHint(user: User) {
+        bot.inputListener.set(user.id, "conceptQuestionsInput")
+        messageService.sendNewMessage(user, QUESTION_EDIT_DESCRIPTION)
     }
 
     @InputHandler(["conceptQuestionsInput"])
