@@ -14,4 +14,5 @@ interface ConceptService {
     fun getById(conceptId: ObjectId): Concept
 
     fun getPage(userId: Long, query: ConceptsQuery): Page<Concept>
+    fun getPageOfLeastAnswered(userId: Long, query: ConceptsQuery): Page<Concept>
 }

@@ -21,6 +21,7 @@ import eu.vendeli.tgbot.types.User
 import eu.vendeli.tgbot.types.internal.ProcessedUpdate
 import eu.vendeli.tgbot.utils.builders.InlineKeyboardMarkupBuilder
 import org.bson.types.ObjectId
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Component
 
@@ -35,7 +36,9 @@ class ConceptsSearch(
     private val chatDataService: ChatDataService,
     private val topicCallbackSearch: TopicCallbackSearch,
     messageService: MessageService,
-    bot: TelegramBot
+    bot: TelegramBot,
+    @Value("\${thinktory.telegram.concepts.pageSize:5}")
+    private val conceptsPageSize: Int
 ) : PageableBySubstringSearch<Concept, ConceptsQuery>(
     messageService, bot, { "$CONCEPT_ICON ${it.title}" }, "conceptSearch"
 ) {
@@ -112,7 +115,10 @@ class ConceptsSearch(
     }
 
     override fun toQuery(context: PagedSubstringSearchContext?): ConceptsQuery {
-        return ConceptsQuery(page = context?.page ?: 0, substring = context?.searchSubstring ?: "")
+        return ConceptsQuery(
+            page = context?.page ?: 0,
+            pageSize = conceptsPageSize,
+            substring = context?.searchSubstring ?: "")
     }
 
     override fun getPageUrl(page: Int): String {

@@ -24,6 +24,7 @@ import eu.vendeli.tgbot.types.User
 import eu.vendeli.tgbot.types.internal.ProcessedUpdate
 import eu.vendeli.tgbot.utils.builders.InlineKeyboardMarkupBuilder
 import org.bson.types.ObjectId
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 private const val CANNOT_FIND_ACTIVE_CONCEPT_MESSAGE = "Can't find active concept. Try choosing concept via search"
