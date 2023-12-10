@@ -1,10 +1,13 @@
 package com.mibe.thinktory.service.quiz
 
-class Quiz(
+data class Quiz(
     var questions: List<QuizQuestion>
 ) {
 
-    fun getNextQuestion(): QuizQuestion = questions.first()
+    val ended:Boolean
+        get() = questions.isEmpty()
+
+    fun getCurrentQuestion(): QuizQuestion = questions.first()
 
     enum class Type(
         val numberOfQuestions: Int

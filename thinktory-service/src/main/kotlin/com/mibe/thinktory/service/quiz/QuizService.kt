@@ -4,6 +4,7 @@ interface QuizService {
 
     fun createQuiz(parameters: QuizParameters): Quiz
 
-    fun updateQuizOnFailure(quiz: Quiz): Quiz
+    fun updateQuizOnSuccess(userId: Long, quiz: Quiz): Quiz
+    fun updateQuizOnFailure(userId: Long, quiz: Quiz): Quiz
 
 }

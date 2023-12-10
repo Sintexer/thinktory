@@ -59,19 +59,17 @@ class QuizServiceImplTest : FeatureSpec({
             val parameters = QuizParameters(userId = 1L, type = Quiz.Type.SHORT)
             val quiz = quizService.createQuiz(parameters)
             quiz.questions shouldHaveSize 1
-            quiz.getNextQuestion().question shouldBe "Concept Title only"
+            quiz.getCurrentQuestion().question shouldBe "Concept Title only"
         }
         scenario("concept with at least one questions is referenced by question") {
             withServiceReturnsQuestionsOfNumber(conceptService, listOf(conceptWithTitleAndQuestion), 1)
             val parameters = QuizParameters(userId = 1L, type = Quiz.Type.SHORT)
             val quiz = quizService.createQuiz(parameters)
             quiz.questions shouldHaveSize 1
-            quiz.getNextQuestion().question shouldBe "Q"
+            quiz.getCurrentQuestion().question shouldBe "Q"
         }
     }
-
-
-
+    
 })
 
 private fun withServiceReturnsQuestionsOfNumber(

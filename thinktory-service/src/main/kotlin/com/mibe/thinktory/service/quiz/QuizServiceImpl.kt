@@ -40,7 +40,20 @@ class QuizServiceImpl(
         }
     }
 
-    override fun updateQuizOnFailure(quiz: Quiz): Quiz {
-        TODO("Not yet implemented")
+    override fun updateQuizOnSuccess(userId: Long, quiz: Quiz): Quiz {
+        if (quiz.ended) {
+            throw IllegalArgumentException("Cannot update empty or ended quiz")
+        }
+        val questions = quiz.questions.drop(1)
+        return quiz.copy(questions = questions)
+    }
+
+    override fun updateQuizOnFailure(userId: Long, quiz: Quiz): Quiz {
+        if (quiz.ended) {
+            throw IllegalArgumentException("Cannot update empty or ended quiz")
+        }
+        val failedQuestion = quiz.questions.first()
+        val remainingQuestions = quiz.questions.drop(1) + failedQuestion
+        return quiz.copy(questions = remainingQuestions )
     }
 }
