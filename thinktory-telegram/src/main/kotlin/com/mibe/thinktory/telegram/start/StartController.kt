@@ -22,6 +22,7 @@ class StartController(
             message("👀 Welcome to Thinktory").inlineKeyboardMarkup {
                 "Create concept" callback "newConcept"
                 "View concepts" callback "concepts"
+                "Quiz" callback "quiz"
             }
         }
     }

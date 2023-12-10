@@ -1,18 +1,29 @@
 package com.mibe.thinktory.telegram.concept
 
 import com.mibe.thinktory.service.concept.Concept
-import com.mibe.thinktory.telegram.core.QUESTION_ICON
-import com.mibe.thinktory.telegram.core.TOPIC_ICON
 import eu.vendeli.tgbot.types.EntityType
 import eu.vendeli.tgbot.utils.builders.EntitiesContextBuilder
 
-fun getMarkdownRender(concept: Concept) : EntitiesContextBuilder.() -> String = {
-    "" - line(title(concept)) -
-            line(topic(concept)) -
-            "\n" -
-            theory(concept) -
-            if (concept.questions.isNotEmpty()) { "\n\n" - concept.getQuestionsBlock() } else { "" }
+fun getMarkdownRender(concept: Concept): EntitiesContextBuilder.() -> String = {
+    conceptWithoutQuestion(concept) -
+            if (concept.questions.isNotEmpty()) {
+                "\n\n" - concept.getQuestionsBlock()
+            } else {
+                ""
+            }
 }
+
+
+fun getMarkdownRenderWithoutQuestions(concept: Concept): EntitiesContextBuilder.() -> String = {
+    conceptWithoutQuestion(concept)
+}
+
+fun EntitiesContextBuilder.conceptWithoutQuestion(concept: Concept) = "" -
+        line(title(concept)) -
+        line(topic(concept)) -
+        "\n" -
+        theory(concept)
+
 
 private fun EntitiesContextBuilder.title(concept: Concept) = bold { concept.title }
 

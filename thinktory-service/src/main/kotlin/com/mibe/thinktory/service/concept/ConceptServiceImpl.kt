@@ -5,7 +5,6 @@ import com.mibe.thinktory.service.concept.exception.IllegalConceptPageException
 import com.mibe.thinktory.service.question.Question
 import com.mibe.thinktory.service.topic.TopicService
 import org.bson.types.ObjectId
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
@@ -23,8 +22,6 @@ class ConceptServiceImpl(
     private val conceptRepository: ConceptRepository,
     private val topicService: TopicService,
     private val mongoTemplate: MongoTemplate,
-    @Value("\${thinktory.concepts.pageSize:5}")
-    private val pageSize: Int
 ) : ConceptService {
 
     override fun createConceptFromTitle(userId: Long, title: String): Concept {
@@ -58,9 +55,6 @@ class ConceptServiceImpl(
         return conceptRepository.findById(conceptId).orElseThrow { ConceptNotFoundException(conceptId) }
     }
 
-    private val conceptSortOrder = Sort.by("title").descending()
-        .and(Sort.by("lastUpdate").descending())
-
     override fun getPage(userId: Long, query: ConceptsQuery): Page<Concept> {
         verifyLowerPageBoundNotViolated(query)
         val conceptsPage = getPageByUserIdAndConceptsQuery(userId, query)
@@ -74,28 +68,10 @@ class ConceptServiceImpl(
         }
     }
 
-    private fun getPageByUserIdAndConceptsQuery(userId: Long, conceptsQuery: ConceptsQuery): Page<Concept> {
-        val pageRequest = PageRequest.of(conceptsQuery.page, pageSize)
-        val searchQuery = Query(getConceptSubstringSearchCriteria(userId, conceptsQuery))
-        val count = mongoTemplate.count(searchQuery, Concept::class.java)
-        val pagedSearchQuery = searchQuery.with(pageRequest)
-        val conceptsList = mongoTemplate.find(pagedSearchQuery, Concept::class.java)
-
-        return PageImpl(conceptsList, pageRequest, count)
+    private fun getPageByUserIdAndConceptsQuery(userId: Long, query: ConceptsQuery): Page<Concept> {
+        val (pageRequest, searchQuery) = buildConceptsQuery(query, userId)
+        return getConceptsPage(searchQuery, pageRequest)
     }
-
-    private fun getConceptSubstringSearchCriteria(userId: Long, conceptsQuery: ConceptsQuery): Criteria {
-        val criteria = where(Concept::userId).isEqualTo(userId)
-        if (conceptsQuery.substring.isBlank()) {
-            return criteria
-        }
-
-        val pattern = mapToLowercaseSubstringPattern(conceptsQuery.substring)
-        criteria.andOperator(where(Concept::title).regex(pattern, "i"))
-        return criteria
-    }
-
-    private fun mapToLowercaseSubstringPattern(substring: String) = ".*${substring.lowercase()}.*"
 
     private fun verifyHigherPageBoundNotViolated(query: ConceptsQuery, conceptsPage: Page<Concept>) {
         if (query.page >= conceptsPage.totalPages && conceptsPage.totalPages != 0) {
@@ -103,7 +79,43 @@ class ConceptServiceImpl(
         }
     }
 
-    companion object {
-        val DEFAULT_ID = ObjectId()
+    override fun getPageOfLeastAnswered(userId: Long, query: ConceptsQuery): Page<Concept> {
+        val (pageRequest, searchQuery) = buildConceptsQuery(query, userId)
+        searchQuery.with(leastAnsweredConceptsSortOrder)
+        return getConceptsPage(searchQuery, pageRequest)
+    }
+
+    private val leastAnsweredConceptsSortOrder = Sort.by("lastUpdate").descending()
+
+    private fun buildConceptsQuery(
+        query: ConceptsQuery,
+        userId: Long
+    ): Pair<PageRequest, Query> {
+        val pageRequest = PageRequest.of(query.page, query.pageSize)
+        val searchQuery = Query(getConceptSubstringSearchCriteria(userId, query))
+        return Pair(pageRequest, searchQuery)
+    }
+
+    private fun getConceptSubstringSearchCriteria(userId: Long, conceptsQuery: ConceptsQuery): Criteria {
+        val criteria = where(Concept::userId).isEqualTo(userId)
+        if (conceptsQuery.substring.isNotBlank()) {
+            val pattern = mapToLowercaseSubstringPattern(conceptsQuery.substring)
+            criteria.andOperator(where(Concept::title).regex(pattern, "i"))
+        }
+
+        return criteria
+    }
+
+    private fun mapToLowercaseSubstringPattern(substring: String) = ".*${substring.lowercase()}.*" // TODO REGEX INJECTION
+
+    private fun getConceptsPage(
+        searchQuery: Query,
+        pageRequest: PageRequest
+    ): PageImpl<Concept> {
+        val count = mongoTemplate.count(searchQuery, Concept::class.java)
+        val pagedSearchQuery = searchQuery.with(pageRequest)
+        val conceptsList = mongoTemplate.find(pagedSearchQuery, Concept::class.java)
+
+        return PageImpl(conceptsList, pageRequest, count)
     }
 }
