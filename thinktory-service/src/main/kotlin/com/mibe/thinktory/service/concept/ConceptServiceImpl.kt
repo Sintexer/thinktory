@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.data.mongodb.core.query.where
 import org.springframework.stereotype.Service
+import java.util.regex.Pattern
 
 
 @Service
@@ -106,7 +107,7 @@ class ConceptServiceImpl(
         return criteria
     }
 
-    private fun mapToLowercaseSubstringPattern(substring: String) = ".*${substring.lowercase()}.*" // TODO REGEX INJECTION
+    private fun mapToLowercaseSubstringPattern(substring: String) = ".*${Pattern.quote(substring)}.*"
 
     private fun getConceptsPage(
         searchQuery: Query,
