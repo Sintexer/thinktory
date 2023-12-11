@@ -20,24 +20,12 @@ class TopicServiceImpl(
         return topicRepository.findById(topicId).get()
     }
 
-    override fun createTopic(userId: Long, topic: Topic): Topic {
-        TODO("Not yet implemented")
-    }
-
     override fun getOrCreateTopicByName(userId: Long, topic: String):Topic {
         return topicRepository.findByName(topic)?: topicRepository.save(Topic(name = topic))
     }
 
     override fun getTopicByName(userId: Long, topic: String): Topic {
         return topicRepository.findByName(topic)!!
-    }
-
-    override fun updateTopic(userId: Long, topicId: String, updatedTopic: Topic): Topic {
-        TODO("Not yet implemented")
-    }
-
-    override fun deleteTopic(userId: Long, topicId: String) {
-        TODO("Not yet implemented")
     }
 
     override fun getPage(userId: Long, topicSearchQuery: TopicSearchQuery): Page<Topic> {
