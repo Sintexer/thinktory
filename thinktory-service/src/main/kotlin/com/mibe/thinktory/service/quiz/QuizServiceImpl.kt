@@ -41,19 +41,35 @@ class QuizServiceImpl(
     }
 
     override fun updateQuizOnSuccess(userId: Long, quiz: Quiz): Quiz {
-        if (quiz.ended) {
-            throw IllegalArgumentException("Cannot update empty or ended quiz")
-        }
-        val questions = quiz.questions.drop(1)
-        return quiz.copy(questions = questions)
+        requireQuizNotEnded(quiz)
+        val answeredQuestion = quiz.questions.first()
+        updateAnsweredConceptAdvance(userId, answeredQuestion)
+        val remainingQuestions = quiz.questions.drop(1)
+        return quiz.copy(questions = remainingQuestions)
+    }
+
+    private fun updateAnsweredConceptAdvance(userId: Long, answeredQuestion: QuizQuestion) {
+        conceptService.updatePositiveAdvance(userId, answeredQuestion.conceptId)
     }
 
     override fun updateQuizOnFailure(userId: Long, quiz: Quiz): Quiz {
-        if (quiz.ended) {
-            throw IllegalArgumentException("Cannot update empty or ended quiz")
-        }
+        requireQuizNotEnded(quiz)
         val failedQuestion = quiz.questions.first()
-        val remainingQuestions = quiz.questions.drop(1) + failedQuestion
-        return quiz.copy(questions = remainingQuestions )
+        updateFailedConceptAdvance(userId, failedQuestion)
+        val reorderedQuestions = moveCurrentQuestionToTheEnd(quiz)
+        return quiz.copy(questions = reorderedQuestions)
+    }
+
+    private fun moveCurrentQuestionToTheEnd(quiz: Quiz): List<QuizQuestion> {
+        val first = quiz.questions.first()
+        return quiz.questions.drop(1) + first
+    }
+
+    private fun updateFailedConceptAdvance(userId: Long, failedQuestion: QuizQuestion) {
+        conceptService.updateNegativeAdvance(userId, failedQuestion.conceptId)
+    }
+
+    private fun requireQuizNotEnded(quiz: Quiz) {
+        require(!quiz.ended) { "Cannot update empty or ended quiz" }
     }
 }

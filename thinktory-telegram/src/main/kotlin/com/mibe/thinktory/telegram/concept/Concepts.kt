@@ -21,6 +21,7 @@ fun getMarkdownRenderWithoutQuestions(concept: Concept): EntitiesContextBuilder.
 fun EntitiesContextBuilder.conceptWithoutQuestion(concept: Concept) = "" -
         line(title(concept)) -
         line(topic(concept)) -
+        line(advance(concept)) -
         "\n" -
         theory(concept)
 
@@ -28,6 +29,8 @@ fun EntitiesContextBuilder.conceptWithoutQuestion(concept: Concept) = "" -
 private fun EntitiesContextBuilder.title(concept: Concept) = bold { concept.title }
 
 private fun EntitiesContextBuilder.topic(concept: Concept) = "Topic: " - bold { concept.getTopicOrEmpty() }
+
+private fun advance(concept: Concept) = "Advance: answered ${concept.advance.answered} time(s)"
 
 private fun theory(concept: Concept) = concept.content ?: "[empty body]"
 

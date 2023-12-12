@@ -86,7 +86,7 @@ class ConceptServiceImpl(
         return getConceptsPage(searchQuery, pageRequest)
     }
 
-    private val leastAnsweredConceptsSortOrder = Sort.by("lastUpdate").descending()
+    private val leastAnsweredConceptsSortOrder = Sort.by("advance.answered").descending()
 
     private fun buildConceptsQuery(
         query: ConceptsQuery,
@@ -118,5 +118,17 @@ class ConceptServiceImpl(
         val conceptsList = mongoTemplate.find(pagedSearchQuery, Concept::class.java)
 
         return PageImpl(conceptsList, pageRequest, count)
+    }
+
+    override fun updatePositiveAdvance(userId: Long, conceptId: ObjectId) {
+        val concept = getById(conceptId)
+        concept.advance.advancePositively()
+        conceptRepository.save(concept)
+    }
+
+    override fun updateNegativeAdvance(userId: Long, conceptId: ObjectId) {
+        val concept = getById(conceptId)
+        concept.advance.advanceNegatively()
+        conceptRepository.save(concept)
     }
 }

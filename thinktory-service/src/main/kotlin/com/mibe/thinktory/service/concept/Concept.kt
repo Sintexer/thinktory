@@ -20,5 +20,6 @@ data class Concept(
         val description: String? = null,
         val questions: List<Question> = emptyList(),
         val labels: Set<String> = emptySet(),
+        val advance: ConceptLearnAdvance = ConceptLearnAdvance(),
         @LastModifiedDate val lastUpdate: LocalDateTime? = null
 )
