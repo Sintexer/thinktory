@@ -5,6 +5,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.0"
 	kotlin("jvm") version "1.9.10"
 	kotlin("plugin.spring") version "1.9.10"
+	id("com.google.devtools.ksp") version "1.9.10-1.0.13"
 }
 
 group = "com.mibe"
@@ -32,6 +33,14 @@ allprojects {
 
 	tasks.withType<Test> {
 		useJUnitPlatform()
+	}
+
+	dependencyManagement {
+		dependencies {
+			dependency("dev.nesk.akkurate:akkurate-core:0.5.0")
+			dependency("dev.nesk.akkurate:akkurate-ksp-plugin:0.5.0")
+			dependency("dev.nesk.akkurate:akkurate-ksp-plugin:0.5.0")
+		}
 	}
 
 }

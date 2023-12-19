@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.spring")
-    id("com.google.devtools.ksp") version "1.9.10-1.0.13"
+    id("com.google.devtools.ksp")
 }
 
 group = "com.mibe.thinktory"
@@ -16,9 +16,9 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter")
 
-    implementation("dev.nesk.akkurate:akkurate-core:0.5.0")
-    implementation("dev.nesk.akkurate:akkurate-ksp-plugin:0.5.0")
-    ksp("dev.nesk.akkurate:akkurate-ksp-plugin:0.5.0")
+    implementation("dev.nesk.akkurate:akkurate-core")
+    implementation("dev.nesk.akkurate:akkurate-ksp-plugin")
+    ksp("dev.nesk.akkurate:akkurate-ksp-plugin")
 
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")

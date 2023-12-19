@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.spring")
+    id("com.google.devtools.ksp")
 }
 
 group = "com.mibe.thinktory"
@@ -13,6 +14,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+    implementation("dev.nesk.akkurate:akkurate-core")
+    implementation("dev.nesk.akkurate:akkurate-ksp-plugin")
+    ksp("dev.nesk.akkurate:akkurate-ksp-plugin")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
