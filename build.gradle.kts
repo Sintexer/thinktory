@@ -57,6 +57,6 @@ springBoot {
 	mainClass.set("com.mibe.thinktory.telegram.ThinktoryBotApplication")
 }
 
-tasks.withType<Jar> {
+tasks.getByName<Jar>("jar") {
 	enabled = false
 }
