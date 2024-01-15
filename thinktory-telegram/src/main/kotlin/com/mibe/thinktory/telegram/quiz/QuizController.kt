@@ -102,6 +102,9 @@ class QuizController(
     }
 
     private suspend fun sendQuizEnded(userId: Long, quiz: Quiz) {
+        if (quiz.ended) {
+            println("TODO") // TODO this if is redundant
+        }
         messageService.sendNewMessage(userId) {
             message("Good job. Statistics: TODO")
                 .inlineKeyboardMarkup { quizEndedMenu() }

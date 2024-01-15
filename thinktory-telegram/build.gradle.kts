@@ -27,3 +27,6 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
 }
 
+tasks.getByName<Jar>("jar") {
+    enabled = false
+}
