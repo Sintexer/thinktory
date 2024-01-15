@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/Sintexer/thinktory/compare/v1.0.0...v1.1.0) (2024-01-15)
+
+
+### Features
+
+* add blank line to gradle.properties ([3da6a60](https://github.com/Sintexer/thinktory/commit/3da6a604f39329b07dd3eb9996f5cf2b3a7f4bca))
+* add blank line to gradle.properties ([7dba97f](https://github.com/Sintexer/thinktory/commit/7dba97f14a965583e80ebf0a98da9fbf4d78ae2c))
+
 ## 1.0.0 (2024-01-15)
 
 
