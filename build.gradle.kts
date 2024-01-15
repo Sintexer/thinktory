@@ -5,6 +5,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.0"
 	kotlin("jvm") version "1.9.10"
 	kotlin("plugin.spring") version "1.9.10"
+	id("com.google.devtools.ksp") version "1.9.10-1.0.13"
 }
 
 group = "com.mibe"
@@ -34,6 +35,14 @@ allprojects {
 		useJUnitPlatform()
 	}
 
+	dependencyManagement {
+		dependencies {
+			dependency("dev.nesk.akkurate:akkurate-core:0.5.0")
+			dependency("dev.nesk.akkurate:akkurate-ksp-plugin:0.5.0")
+			dependency("dev.nesk.akkurate:akkurate-ksp-plugin:0.5.0")
+		}
+	}
+
 }
 
 dependencies {
@@ -42,4 +51,12 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+springBoot {
+	mainClass.set("com.mibe.thinktory.telegram.ThinktoryBotApplication")
+}
+
+tasks.withType<Jar> {
+	enabled = false
 }

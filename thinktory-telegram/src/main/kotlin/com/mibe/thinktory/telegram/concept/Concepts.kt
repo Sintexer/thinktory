@@ -25,7 +25,6 @@ fun EntitiesContextBuilder.conceptWithoutQuestion(concept: Concept) = "" -
         "\n" -
         theory(concept)
 
-
 private fun EntitiesContextBuilder.title(concept: Concept) = bold { concept.title }
 
 private fun EntitiesContextBuilder.topic(concept: Concept) = "Topic: " - bold { concept.getTopicOrEmpty() }
