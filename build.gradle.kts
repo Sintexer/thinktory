@@ -52,3 +52,11 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
+
+springBoot {
+	mainClass.set("com.mibe.thinktory.telegram.ThinktoryBotApplication")
+}
+
+tasks.withType<Jar> {
+	enabled = false
+}
