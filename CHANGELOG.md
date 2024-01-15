@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/Sintexer/thinktory/compare/v1.1.1...v1.1.2) (2024-01-15)
+
+
+### Bug Fixes
+
+* upload workflow path adjustment ([7a17729](https://github.com/Sintexer/thinktory/commit/7a177293219b928d596c7391e7b6f67720755c41))
+
 ## [1.1.1](https://github.com/Sintexer/thinktory/compare/v1.1.0...v1.1.1) (2024-01-15)
 
 
