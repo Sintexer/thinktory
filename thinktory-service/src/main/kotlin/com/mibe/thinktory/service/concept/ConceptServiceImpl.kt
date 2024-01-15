@@ -4,6 +4,11 @@ import com.mibe.thinktory.service.concept.exception.ConceptNotFoundException
 import com.mibe.thinktory.service.concept.exception.IllegalConceptPageException
 import com.mibe.thinktory.service.question.Question
 import com.mibe.thinktory.service.topic.TopicService
+import dev.nesk.akkurate.Validator
+import dev.nesk.akkurate.constraints.builders.hasLengthGreaterThanOrEqualTo
+import dev.nesk.akkurate.constraints.builders.hasLengthLowerThanOrEqualTo
+import dev.nesk.akkurate.constraints.builders.isNotBlank
+import dev.nesk.akkurate.constraints.otherwise
 import org.bson.types.ObjectId
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -15,16 +20,19 @@ import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.data.mongodb.core.query.where
 import org.springframework.stereotype.Service
+import java.util.regex.Pattern
 
 
 @Service
 class ConceptServiceImpl(
     private val conceptRepository: ConceptRepository,
     private val topicService: TopicService,
+    private val conceptValidator: ConceptValidator,
     private val mongoTemplate: MongoTemplate,
 ) : ConceptService {
 
     override fun createConceptFromTitle(userId: Long, title: String): Concept {
+        conceptValidator.validateTitle(title)
         val newConcept = Concept(title = title, userId = userId)
         return conceptRepository.save(newConcept)
     }
@@ -34,10 +42,12 @@ class ConceptServiceImpl(
     }
 
     override fun updateContent(conceptId: ObjectId, content: String): Concept {
+        conceptValidator.validateContent(content)
         return conceptRepository.save(getById(conceptId).copy(content = content))
     }
 
     override fun updateTitle(conceptId: ObjectId, title: String): Concept {
+        conceptValidator.validateTitle(title)
         return conceptRepository.save(getById(conceptId).copy(title = title))
     }
 
@@ -48,6 +58,7 @@ class ConceptServiceImpl(
     }
 
     override fun updateQuestions(conceptId: ObjectId, questions: List<Question>): Concept {
+        conceptValidator.validateQuestions(questions)
         return conceptRepository.save(getById(conceptId).copy(questions = questions))
     }
 
@@ -56,16 +67,10 @@ class ConceptServiceImpl(
     }
 
     override fun getPage(userId: Long, query: ConceptsQuery): Page<Concept> {
-        verifyLowerPageBoundNotViolated(query)
+        conceptValidator.validateQuery(query)
         val conceptsPage = getPageByUserIdAndConceptsQuery(userId, query)
         verifyHigherPageBoundNotViolated(query, conceptsPage)
         return conceptsPage
-    }
-
-    private fun verifyLowerPageBoundNotViolated(query: ConceptsQuery) {
-        if (query.page < 0) {
-            throw IllegalConceptPageException(query.page, "Page number is negative")
-        }
     }
 
     private fun getPageByUserIdAndConceptsQuery(userId: Long, query: ConceptsQuery): Page<Concept> {
@@ -80,12 +85,13 @@ class ConceptServiceImpl(
     }
 
     override fun getPageOfLeastAnswered(userId: Long, query: ConceptsQuery): Page<Concept> {
+        conceptValidator.validateQuery(query)
         val (pageRequest, searchQuery) = buildConceptsQuery(query, userId)
         searchQuery.with(leastAnsweredConceptsSortOrder)
         return getConceptsPage(searchQuery, pageRequest)
     }
 
-    private val leastAnsweredConceptsSortOrder = Sort.by("lastUpdate").descending()
+    private val leastAnsweredConceptsSortOrder = Sort.by("advance.answered").descending()
 
     private fun buildConceptsQuery(
         query: ConceptsQuery,
@@ -106,7 +112,7 @@ class ConceptServiceImpl(
         return criteria
     }
 
-    private fun mapToLowercaseSubstringPattern(substring: String) = ".*${substring.lowercase()}.*" // TODO REGEX INJECTION
+    private fun mapToLowercaseSubstringPattern(substring: String) = ".*${Pattern.quote(substring)}.*"
 
     private fun getConceptsPage(
         searchQuery: Query,
@@ -117,5 +123,17 @@ class ConceptServiceImpl(
         val conceptsList = mongoTemplate.find(pagedSearchQuery, Concept::class.java)
 
         return PageImpl(conceptsList, pageRequest, count)
+    }
+
+    override fun updatePositiveAdvance(userId: Long, conceptId: ObjectId) {
+        val concept = getById(conceptId)
+        concept.advance.advancePositively()
+        conceptRepository.save(concept)
+    }
+
+    override fun updateNegativeAdvance(userId: Long, conceptId: ObjectId) {
+        val concept = getById(conceptId)
+        concept.advance.advanceNegatively()
+        conceptRepository.save(concept)
     }
 }

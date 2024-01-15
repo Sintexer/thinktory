@@ -15,4 +15,7 @@ interface ConceptService {
 
     fun getPage(userId: Long, query: ConceptsQuery): Page<Concept>
     fun getPageOfLeastAnswered(userId: Long, query: ConceptsQuery): Page<Concept>
+
+    fun updatePositiveAdvance(userId: Long, conceptId: ObjectId)
+    fun updateNegativeAdvance(userId: Long, conceptId: ObjectId)
 }
