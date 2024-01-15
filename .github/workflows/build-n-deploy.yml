@@ -32,6 +32,7 @@ jobs:
         path: build/libs/thinktory-*.jar
 
   build-image:
+    needs: build-jar
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
