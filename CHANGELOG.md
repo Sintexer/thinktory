@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.4](https://github.com/Sintexer/thinktory/compare/v1.1.3...v1.1.4) (2024-01-15)
+
+
+### Bug Fixes
+
+* **build:** change path to jar and jar name for build workflow ([25b5dd4](https://github.com/Sintexer/thinktory/commit/25b5dd4a7781c343dfeb7a6d2b0e8482f864d58d))
+* **build:** give write packages permissions to build-image job ([37007bf](https://github.com/Sintexer/thinktory/commit/37007bf44746493afde29d14f2fd17f38ae943ea))
+
 ## [1.1.3](https://github.com/Sintexer/thinktory/compare/v1.1.2...v1.1.3) (2024-01-15)
 
 
