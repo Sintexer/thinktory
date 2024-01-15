@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/Sintexer/thinktory/compare/v1.1.0...v1.1.1) (2024-01-15)
+
+
+### Bug Fixes
+
+* change path in artifact upload workflow ([3d76b0f](https://github.com/Sintexer/thinktory/commit/3d76b0f8541d76da6aa9b2c5ed052ec14866227c))
+
 ## [1.1.0](https://github.com/Sintexer/thinktory/compare/v1.0.0...v1.1.0) (2024-01-15)
 
 
