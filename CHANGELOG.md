@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/Sintexer/thinktory/compare/v1.1.2...v1.1.3) (2024-01-15)
+
+
+### Bug Fixes
+
+* **build:** return jar building by build task ([b660bd4](https://github.com/Sintexer/thinktory/commit/b660bd49e0e04aee9b775c0e6ea23e9689b5458d))
+
 ## [1.1.2](https://github.com/Sintexer/thinktory/compare/v1.1.1...v1.1.2) (2024-01-15)
 
 
