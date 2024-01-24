@@ -56,7 +56,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
          name: Package
-         path: app/thinktory.jar
+         path: /opt/mibe/thinktory/thinktory.jar
     - name: Build and publish Docker Image
       uses: docker/build-push-action@v5
       with:
