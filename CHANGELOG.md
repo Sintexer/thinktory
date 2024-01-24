@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/Sintexer/thinktory/compare/v1.2.1...v1.2.2) (2024-01-24)
+
+
+### Bug Fixes
+
+* change image jar location to /app/thinktory.jar ([122f316](https://github.com/Sintexer/thinktory/commit/122f31699e322e2881372396f54765c877df25af))
+
 ## [1.2.1](https://github.com/Sintexer/thinktory/compare/v1.2.0...v1.2.1) (2024-01-24)
 
 
