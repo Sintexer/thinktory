@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/Sintexer/thinktory/compare/v1.1.4...v1.2.0) (2024-01-24)
+
+
+### Features
+
+* add thinktory service to compose and update workflows ([1cf0391](https://github.com/Sintexer/thinktory/commit/1cf039113c58bff2c527e5cc8fa07d566951e3ed))
+
 ## [1.1.4](https://github.com/Sintexer/thinktory/compare/v1.1.3...v1.1.4) (2024-01-15)
 
 
