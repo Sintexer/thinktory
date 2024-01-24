@@ -24,12 +24,12 @@ jobs:
       uses: gradle/gradle-build-action@v2
       with:
         gradle-version: 8.1.1
-        arguments: build
+        arguments: build --scan
     - name: Upload jar
       uses: actions/upload-artifact@v4
       with:
         name: Package
-        path: build/libs
+        path: build/libs/thinktory-*
 
   build-image:
     needs: build-jar
@@ -56,7 +56,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
          name: Package
-         path: app/
+         path: app/thinktory.jar
     - name: Build and publish Docker Image
       uses: docker/build-push-action@v5
       with:
