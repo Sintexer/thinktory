@@ -15,5 +15,15 @@ services:
       - ./init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
       - mongodb_data:/data/db
 
+  thinktory:
+    image: ghcr.io/sintexer/thinktory:latest
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - MONGODB_USERNAME=${MONGODB_USERNAME}
+      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
+      - MONGODB_HOST=${MONGODB_HOST}
+      - MONGODB_PORT=${MONGODB_PORT}
+      - MONGODB_DATABASE=${MONGODB_DATABASE}
+
 volumes:
   mongodb_data:
