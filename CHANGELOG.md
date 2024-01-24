@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/Sintexer/thinktory/compare/v1.2.0...v1.2.1) (2024-01-24)
+
+
+### Bug Fixes
+
+* change container jar path ([583bfe9](https://github.com/Sintexer/thinktory/commit/583bfe98d9cb48570240d820af71531db50d3f01))
+
 ## [1.2.0](https://github.com/Sintexer/thinktory/compare/v1.1.4...v1.2.0) (2024-01-24)
 
 
