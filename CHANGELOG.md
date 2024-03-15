@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/Sintexer/thinktory/compare/v1.2.2...v1.3.0) (2024-03-15)
+
+
+### Features
+
+* update README.md ([51be5f3](https://github.com/Sintexer/thinktory/commit/51be5f39fb5060c2d85518fdea7afb71db05db51))
+
 ## [1.2.2](https://github.com/Sintexer/thinktory/compare/v1.2.1...v1.2.2) (2024-01-24)
 
 
