@@ -20,8 +20,8 @@ class ConceptValidatorImpl : ConceptValidator {
 
     override fun validateConcept(concept: Concept) {
         validateTitle(concept.title)
-        concept.content?.let { validateContent(concept.content) }
-        validateQuestions(concept.questions)
+        concept.theory?.let { validateContent(concept.theory) }
+//        validateQuestions(concept.questions)
     }
 
     override fun validateTitle(title: String) {
@@ -75,7 +75,7 @@ class ConceptValidatorImpl : ConceptValidator {
     }
 
     private val validateQuestion = Validator<Question> {
-         content {
+        content {
             isNotBlank() otherwise {
                 "Concept question cannot be blank"
             }
@@ -113,12 +113,6 @@ class ConceptValidatorImpl : ConceptValidator {
         }
     }
 
-    /**
-     * Telegram max message length is 4096
-     * 10 questions = 3K
-     * total length = 250 + 700 + 3000 = 3950
-     * 146 chars are left for delimiters and service symbols
-     */
     companion object {
         const val MAX_CONCEPT_TITLE_LENGTH = 250
         const val MAX_CONCEPT_CONTENT_LENGTH = 700

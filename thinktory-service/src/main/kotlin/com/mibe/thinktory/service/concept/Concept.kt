@@ -1,25 +1,28 @@
 package com.mibe.thinktory.service.concept
 
-import com.mibe.thinktory.service.question.Question
-import com.mibe.thinktory.service.topic.Topic
-import org.bson.types.ObjectId
-import org.springframework.data.annotation.Id
-import org.springframework.data.annotation.LastModifiedDate
-import org.springframework.data.mongodb.core.index.TextIndexed
-import org.springframework.data.mongodb.core.mapping.DBRef
-import org.springframework.data.mongodb.core.mapping.Document
-import java.time.LocalDateTime
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.SequenceGenerator
+import jakarta.persistence.Table
 
-@Document(collection = "concepts")
+const val CONCEPT_SEQUENCE_NAME = "concepts_seq"
+
+@Entity
+@Table(name = "concepts")
+@SequenceGenerator(name = CONCEPT_SEQUENCE_NAME, sequenceName = CONCEPT_SEQUENCE_NAME, allocationSize = 50)
 data class Concept(
-        @Id val id: ObjectId = ObjectId.get(),
-        val title: String,
-        val userId: Long,
-        @DBRef val topic: Topic? = null,
-        @TextIndexed val content: String? = null,
-        val description: String? = null,
-        val questions: List<Question> = emptyList(),
-        val labels: Set<String> = emptySet(),
-        val advance: ConceptLearnAdvance = ConceptLearnAdvance(),
-        @LastModifiedDate val lastUpdate: LocalDateTime? = null
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = CONCEPT_SEQUENCE_NAME)
+    val id: Long = 0,
+
+    val title: String,
+
+    @Column(columnDefinition = "TEXT")
+    val theory: String? = null,
+
+    val labels: Set<String> = emptySet(),
 )

@@ -240,7 +240,7 @@ paths:
                       items:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Concept'
+                          $ref: '#/components/schemas/ConceptModel'
         '400':
           description: Invalid request
         '404':
@@ -271,7 +271,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Concept'
+                $ref: '#/components/schemas/ConceptModel'
         '400':
           description: Invalid ID supplied or invalid request body.
         '404':
@@ -297,7 +297,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Concept'
+                $ref: '#/components/schemas/ConceptModel'
         '400':
           description: Invalid ID supplied.
         '404':
@@ -328,7 +328,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Concept'
+                $ref: '#/components/schemas/ConceptModel'
         '400':
           description: Invalid ID supplied or invalid request body.
         '404':
@@ -642,7 +642,7 @@ components:
         maximum: 40
         multipleOf: 5
   schemas:
-    Concept:
+    ConceptModel:
       type: object
       properties:
         id:
@@ -651,9 +651,6 @@ components:
         title:
           type: string
         theory:
-          type: string
-        description:
-          description: "An optional small paragraph describing the concept"
           type: string
         questions:
           type: array
@@ -671,31 +668,27 @@ components:
           format: date-time
     ConceptCreateRequest:
       type: object
+      required:
+        - title
+        - theory
       properties:
         title:
           type: string
         theory:
           type: string
-        description:
-          description: "An optional small paragraph describing the concept"
-          type: string
-        questions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Question'
         labels:
           type: array
           items:
             type: string
     ConceptUpdateRequest:
       type: object
+      required:
+        - title
+        - theory
       properties:
         title:
           type: string
         theory:
-          type: string
-        description:
-          description: "An optional small paragraph describing the concept"
           type: string
         questions:
           type: array
@@ -764,7 +757,7 @@ components:
         concepts:
           type: array
           items:
-            $ref: '#/components/schemas/Concept'
+            $ref: '#/components/schemas/ConceptModel'
         createTime:
           type: string
           format: date-time

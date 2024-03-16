@@ -12,10 +12,13 @@ val kotestVersion by project.properties
 val mockkVersion by project.properties
 
 dependencies {
-    api("org.springframework.boot:spring-boot-starter-data-mongodb")
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+    implementation("org.flywaydb:flyway-core:10.10.0")
+    implementation("org.postgresql:postgresql:42.7.3")
 
     implementation("dev.nesk.akkurate:akkurate-core")
     implementation("dev.nesk.akkurate:akkurate-ksp-plugin")

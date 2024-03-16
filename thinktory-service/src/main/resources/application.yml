@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${THINKTORY_DB_HOST:localhost:5432}/${THINKTORY_DB_NAME}
+    username: ${THINKTORY_DB_USER}
+    password: ${THINKTORY_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+  flyway:
+    enabled: true
+    url: jdbc:postgresql://${THINKTORY_DB_HOST:localhost:5432}/${THINKTORY_DB_NAME}
+    user: ${THINKTORY_DB_USER}
+    password: ${THINKTORY_DB_PASSWORD}
+
+    clean-on-startup: true

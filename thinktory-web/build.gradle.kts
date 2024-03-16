@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm")
     id("org.openapi.generator")
     id("org.jetbrains.kotlin.plugin.spring")
+    id("com.google.devtools.ksp")
 }
 
 group = "${project.group}.web"
@@ -10,9 +11,15 @@ val kotestVersion by project.properties
 val mockkVersion by project.properties
 
 dependencies {
+    implementation(project(":thinktory-service"))
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+
+    implementation("dev.nesk.akkurate:akkurate-core")
+    implementation("dev.nesk.akkurate:akkurate-ksp-plugin")
+    ksp("dev.nesk.akkurate:akkurate-ksp-plugin")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
@@ -35,8 +42,13 @@ sourceSets {
     main {
         kotlin {
             srcDir("${buildDir}/$generatedApiRelativePath/src/main")
+            srcDir("${buildDir}/$generatedApiRelativePath/src/main/kotlin")
         }
     }
+}
+
+tasks.named("openApiGenerate") {
+    dependsOn("clean", ":thinktory-web:kspKotlin")
 }
 
 openApiGenerate {
@@ -50,7 +62,8 @@ openApiGenerate {
         "interfaceOnly" to "true",
         "delegatePattern" to "true",
         "dateLibrary" to "java8",
-        "useSpringBoot3" to "true"
+        "useSpringBoot3" to "true",
+        "exceptionHandler" to "false"
     ))
 }
 
