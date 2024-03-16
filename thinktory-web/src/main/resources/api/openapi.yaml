@@ -1,0 +1,808 @@
+---
+openapi: "3.0.3"
+
+info:
+  title: "Thinktory API"
+  version: 1.0.0
+
+paths:
+
+  /quizzes:
+    post:
+      summary: Create a new quiz.
+      operationId: createQuiz
+      tags:
+        - Quizzes
+      requestBody:
+        description: Quiz creation request.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizCreateRequest'
+      responses:
+        '201':
+          description: The newly created quiz.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quiz'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /quizzes/{id}:
+    get:
+      summary: Get a specific quiz by ID.
+      operationId: getQuizById
+      tags:
+        - Quizzes
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: The quiz with the specified ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quiz'
+        '400':
+          description: Invalid quiz ID
+        '404':
+          description: Quiz not found by ID
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete a specific quiz.
+      operationId: deleteQuiz
+      tags:
+        - Quizzes
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No content.
+        '400':
+          description: Invalid quiz ID
+        '404':
+          description: Quiz not found by ID
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /collections:
+    get:
+      summary: Get all user collections.
+      operationId: getAllCollections
+      tags:
+        - Collections
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: A page of collections.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Pagination'
+                  - type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Collection'
+        '400':
+          description: Invalid request
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a new collection.
+      operationId: createCollection
+      tags:
+        - Collections
+      requestBody:
+        description: Collection create request.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CollectionCreateRequest'
+      responses:
+        '201':
+          description: The newly created collection.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+        '400':
+          description: Invalid request body
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /collections/{id}:
+    get:
+      summary: Get a specific collection by ID.
+      operationId: getCollectionById
+      tags:
+        - Collections
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: The collection with the specified ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+        '400':
+          description: Invalid collection ID
+        '404':
+          description: Collection not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update a specific collection.
+      operationId: updateCollection
+      tags:
+        - Collections
+      parameters:
+        - $ref: '#/components/parameters/id'
+      requestBody:
+        description: The updated collection.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CollectionUpdateRequest'
+      responses:
+        '200':
+          description: The updated collection.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+        '400':
+          description: Invalid ID or request body contains an error
+        '404':
+          description: Collection not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete a specific collection.
+      description: Delete a collection and move all attached concepts to a default collection.
+      operationId: deleteCollection
+      tags:
+        - Collections
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No content.
+        '400':
+          description: Invalid ID or request body contains an error
+        '404':
+          description: Collection not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /collections/{collection_id}/concepts:
+    get:
+      summary: Get all concepts associated with a specific collection.
+      operationId: getAllConceptsByCollectionId
+      tags:
+        - Collections
+      parameters:
+        - $ref: '#/components/parameters/collection_id'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: A page of concepts.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Pagination'
+                  - type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Concept'
+        '400':
+          description: Invalid request
+        '404':
+          description: Collection not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /concepts:
+    post:
+      summary: Create a new concept.
+      operationId: createConcept
+      tags:
+        - Concepts
+      requestBody:
+        description: The concept to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConceptCreateRequest'
+      responses:
+        '201':
+          description: The newly created concept.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Concept'
+        '400':
+          description: Invalid ID supplied or invalid request body.
+        '404':
+          description: Collection not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /concepts/{id}:
+    get:
+      summary: Get a specific concept by ID.
+      operationId: getConceptByConceptId
+      tags:
+        - Concepts
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: The concept with the specified ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Concept'
+        '400':
+          description: Invalid ID supplied.
+        '404':
+          description: Concept not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update a specific concept.
+      operationId: updateConceptByConceptId
+      tags:
+        - Concepts
+      parameters:
+        - $ref: '#/components/parameters/id'
+      requestBody:
+        description: The updated concept.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConceptUpdateRequest'
+      responses:
+        '200':
+          description: The updated concept.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Concept'
+        '400':
+          description: Invalid ID supplied or invalid request body.
+        '404':
+          description: Concept not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete a specific concept.
+      operationId: deleteConceptByConceptId
+      tags:
+        - Concepts
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No content.
+        '400':
+          description: Invalid ID supplied.
+        '404':
+          description: Concept not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /concepts/{concept_id}/questions:
+    get:
+      summary: Get all questions of a specific concept.
+      operationId: getAllQuestionsByConceptId
+      tags:
+        - Questions
+      parameters:
+        - $ref: '#/components/parameters/concept_id'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: A page of questions associated with the specified concept.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Pagination'
+                  - type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Question'
+        '400':
+          description: Invalid ID supplied.
+        '404':
+          description: Concept not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a new question for a specific concept.
+      operationId: createConceptQuestionByConceptId
+      tags:
+        - Questions
+      parameters:
+        - $ref: '#/components/parameters/concept_id'
+      requestBody:
+        description: The question to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionCreateRequest'
+      responses:
+        '201':
+          description: The newly created question.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          description: Invalid ID supplied or invalid request body.
+        '404':
+          description: Concept not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /concepts/{concept_id}/questions/{question_id}:
+    get:
+      summary: Get a specific concept's question.
+      operationId: getQuestionByConceptIdAndQuestionId
+      tags:
+        - Questions
+      parameters:
+        - $ref: '#/components/parameters/concept_id'
+        - $ref: '#/components/parameters/question_id'
+      responses:
+        '200':
+          description: The question with the specified ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          description: Invalid ID supplied.
+        '404':
+          description: Concept or Question were not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update a specific concept's question.
+      operationId: updateQuestionByConceptIdAndQuestionId
+      tags:
+        - Questions
+      parameters:
+        - $ref: '#/components/parameters/concept_id'
+        - $ref: '#/components/parameters/question_id'
+      requestBody:
+        description: The updated question.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionUpdateRequest'
+      responses:
+        '200':
+          description: The updated question.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          description: Invalid ID supplied or invalid request body.
+        '404':
+          description: Concept or Question were not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete a specific concept's question.
+      operationId: deleteQuestionByConceptIdAndQuestionId
+      tags:
+        - Questions
+      parameters:
+        - $ref: '#/components/parameters/concept_id'
+        - $ref: '#/components/parameters/question_id'
+      responses:
+        '204':
+          description: No content.
+        '404':
+          description: Concept or Question were not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /concepts/-/questions/{id}:
+    get:
+      summary: Get a specific question by ID.
+      operationId: getQuestionByQuestionId
+      tags:
+        - Questions
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: The question with the specified ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          description: Invalid ID supplied.
+        '404':
+          description: Question not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update a specific concept's question.
+      operationId: updateQuestion
+      tags:
+        - Questions
+      parameters:
+        - $ref: '#/components/parameters/id'
+      requestBody:
+        description: The updated question.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionUpdateRequest'
+      responses:
+        '200':
+          description: The updated question.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          description: Invalid ID supplied or invalid request body.
+        '404':
+          description: Question not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete a specific question.
+      operationId: deleteQuestion
+      tags:
+        - Questions
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No content.
+        '404':
+          description: Question not found.
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      description: The ID of the resource.
+      required: true
+      schema:
+        type: integer
+        format: int64
+    concept_id:
+      name: concept_id
+      in: path
+      description: The ID of the concept.
+      required: true
+      schema:
+        type: integer
+        format: int64
+    question_id:
+      name: question_id
+      in: path
+      description: The ID of the question.
+      required: true
+      schema:
+        type: integer
+        format: int64
+    quiz_id:
+      name: quiz_id
+      in: path
+      description: The ID of the quiz.
+      required: true
+      schema:
+        type: integer
+        format: int64
+    collection_id:
+      name: collection_id
+      in: path
+      description: The ID of the collection.
+      required: true
+      schema:
+        type: integer
+        format: int64
+    page:
+      name: page
+      in: query
+      description: The page number to retrieve.
+      required: false
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    page_size:
+      name: page_size
+      in: query
+      description: The number of items to return per page.
+      required: false
+      schema:
+        type: integer
+        default: 15
+        minimum: 10
+        maximum: 40
+        multipleOf: 5
+  schemas:
+    Concept:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        theory:
+          type: string
+        description:
+          description: "An optional small paragraph describing the concept"
+          type: string
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Question'
+        labels:
+          type: array
+          items:
+            type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedTime:
+          type: string
+          format: date-time
+    ConceptCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        theory:
+          type: string
+        description:
+          description: "An optional small paragraph describing the concept"
+          type: string
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Question'
+        labels:
+          type: array
+          items:
+            type: string
+    ConceptUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        theory:
+          type: string
+        description:
+          description: "An optional small paragraph describing the concept"
+          type: string
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Question'
+        labels:
+          type: array
+          items:
+            type: string
+    Question:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        content:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedTime:
+          type: string
+          format: date-time
+    QuestionUpdateRequest:
+      type: object
+      properties:
+        content:
+          type: string
+    QuestionCreateRequest:
+      type: object
+      properties:
+        content:
+          type: string
+    Quiz:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Question'
+        createTime:
+          type: string
+          format: date-time
+        updateTime:
+          type: string
+          format: date-time
+    QuizCreateRequest:
+      type: object
+      properties:
+        maxQuestionsNumber:
+          type: integer
+          format: int32
+    Collection:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        concepts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Concept'
+        createTime:
+          type: string
+          format: date-time
+        updateTime:
+          type: string
+          format: date-time
+    CollectionUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+    CollectionCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+          description: The total number of pages.
+        currentPage:
+          type: integer
+          format: int32
+          description: The current page number.
+        pageSize:
+          type: integer
+          format: int32
+          description: The number of items returned per page.
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A human-readable error message.
+        code:
+          type: integer
+          description: An application-specific error code.
+          example: 40400

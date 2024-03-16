@@ -6,8 +6,8 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
-group = "com.mibe.thinktory"
-version = "0.0.1-SNAPSHOT"
+group = "${project.group}.service"
+
 val kotestVersion by project.properties
 val mockkVersion by project.properties
 

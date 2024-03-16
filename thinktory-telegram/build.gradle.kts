@@ -4,8 +4,8 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
-group = "com.mibe.thinktory"
-version = "0.0.1-SNAPSHOT"
+group = "${project.group}.telegram"
+
 val kotestVersion by project.properties
 
 dependencies {
