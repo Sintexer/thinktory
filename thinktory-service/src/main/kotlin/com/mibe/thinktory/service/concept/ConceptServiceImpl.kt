@@ -1,5 +1,6 @@
 package com.mibe.thinktory.service.concept
 
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 
@@ -12,8 +13,11 @@ class ConceptServiceImpl(
     override fun createConcept(createCommand: ConceptCreateCommand): Concept {
         val concept = mapToConcept(createCommand)
         conceptValidator.validateConcept(concept)
-//        return Concept(0, "", "", emptySet())
         return conceptRepository.save(concept)
+    }
+
+    override fun getByIdOrNull(id: Long): Concept? {
+        return conceptRepository.findByIdOrNull(id)
     }
 
     private fun mapToConcept(createCommand: ConceptCreateCommand): Concept {
