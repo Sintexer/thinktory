@@ -32,6 +32,7 @@ class ConceptsAdapter(private val conceptsService: ConceptService) : ConceptsApi
         id: Long,
         conceptUpdateRequest: ConceptUpdateRequest
     ): ResponseEntity<ConceptModel> {
-        return super.updateConceptByConceptId(id, conceptUpdateRequest)
+        val updatedConcept = conceptsService.updateConcept(conceptUpdateRequest.toCommand(id))
+        return ResponseEntity.ok(updatedConcept.toModel())
     }
 }

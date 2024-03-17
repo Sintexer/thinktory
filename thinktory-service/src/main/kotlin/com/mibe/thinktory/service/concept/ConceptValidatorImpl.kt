@@ -113,6 +113,16 @@ class ConceptValidatorImpl : ConceptValidator {
         }
     }
 
+    override fun validateId(conceptId: Long) {
+        validateId.invoke(conceptId).orThrow()
+    }
+
+    private val validateId = Validator<Long> {
+        this {
+            isGreaterThan(0) otherwise { "Concept id mu st greater than 0, but was ${this.unwrap()}" }
+        }
+    }
+
     companion object {
         const val MAX_CONCEPT_TITLE_LENGTH = 250
         const val MAX_CONCEPT_CONTENT_LENGTH = 700

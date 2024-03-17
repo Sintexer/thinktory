@@ -9,4 +9,5 @@ interface ConceptValidator {
     fun validateQuestions(questions: List<Question>)
     fun validateQuestion(question: Question)
     fun validateQuery(query: ConceptsQuery)
+    fun validateId(conceptId: Long)
 }

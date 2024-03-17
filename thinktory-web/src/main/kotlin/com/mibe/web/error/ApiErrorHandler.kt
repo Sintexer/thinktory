@@ -1,5 +1,6 @@
 package com.mibe.web.error
 
+import com.mibe.thinktory.service.NotFoundException
 import dev.nesk.akkurate.ValidationResult
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus
@@ -15,6 +16,10 @@ class ApiErrorHandler {
     @ExceptionHandler(value = [NotImplementedError::class])
     fun onNotImplemented(ex: NotImplementedError, response: HttpServletResponse): Unit =
         response.sendError(HttpStatus.NOT_IMPLEMENTED.value())
+
+    @ExceptionHandler(value = [NotFoundException::class])
+    fun onNotImplemented(ex: NotFoundException, response: HttpServletResponse): Unit =
+        response.sendError(HttpStatus.NOT_FOUND.value())
 
     @ExceptionHandler(value = [ValidationResult.Exception::class])
     fun onConstraintViolation(ex: ValidationResult.Exception, response: HttpServletResponse): Unit =
