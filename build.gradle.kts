@@ -8,7 +8,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.23"
     kotlin("plugin.jpa") version "1.9.23"
 
-    id("com.google.devtools.ksp") version "1.9.10-1.0.13"
+    id("com.google.devtools.ksp") version "1.9.23-1.0.19"
     id("org.openapi.generator") version "7.4.0"
 }
 
