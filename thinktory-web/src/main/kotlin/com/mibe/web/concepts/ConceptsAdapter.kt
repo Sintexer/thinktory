@@ -35,4 +35,9 @@ class ConceptsAdapter(private val conceptsService: ConceptService) : ConceptsApi
         val updatedConcept = conceptsService.updateConcept(conceptUpdateRequest.toCommand(id))
         return ResponseEntity.ok(updatedConcept.toModel())
     }
+
+    override fun deleteConceptByConceptId(id: Long): ResponseEntity<Unit> {
+        conceptsService.deleteById(id)
+        return ResponseEntity.noContent().build()
+    }
 }

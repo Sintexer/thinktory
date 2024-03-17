@@ -21,14 +21,23 @@ class ConceptServiceImpl(
     }
 
     override fun updateConcept(updateCommand: ConceptUpdateCommand): Concept {
-        if (!conceptRepository.existsById(updateCommand.id)) {
-            throw ConceptNotFoundException(updateCommand.id)
-        }
+        validateConceptExists(updateCommand.id)
 
         val updatedConcept = updateCommand.toConcept()
         conceptValidator.validateConcept(updatedConcept)
 
         return conceptRepository.save(updatedConcept)
+    }
+
+    override fun deleteById(id: Long) {
+        validateConceptExists(id)
+        conceptRepository.deleteById(id)
+    }
+
+    private fun validateConceptExists(conceptId: Long) {
+        if (!conceptRepository.existsById(conceptId)) {
+            throw ConceptNotFoundException(conceptId)
+        }
     }
 
     private fun mapToConcept(createCommand: ConceptCreateCommand): Concept {
